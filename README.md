@@ -5,7 +5,7 @@
 # react-tiny-virtual-list
 > A tiny but mighty 2kb list virtualization component, with zero dependencies 💪
 
-[![npm version](https://img.shields.io/npm/v/react-mighty-infinite-list.svg)](https://www.npmjs.com/package/react-tiny-virtual-list)
+[![npm version](https://img.shields.io/npm/v/react-tiny-virtual-list.svg)](https://www.npmjs.com/package/react-tiny-virtual-list)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/clauderic/react-tiny-virtual-list/blob/master/LICENSE)
 [![Gitter](https://badges.gitter.im/clauderic/react-tiny-virtual-list.svg)](https://gitter.im/clauderic/react-tiny-virtual-list)
 
