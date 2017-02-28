@@ -40,9 +40,7 @@ export default class CellSizeAndPositionManager {
    */
   getSizeAndPositionOfCell(index) {
     if (index < 0 || index >= this._cellCount) {
-      throw Error(
-        `Requested index ${index} is outside of range 0..${this._cellCount}`,
-      );
+      throw Error(`Requested index ${index} is outside of range 0..${this._cellCount}`);
     }
 
     if (index > this._lastMeasuredIndex) {
@@ -141,9 +139,7 @@ export default class CellSizeAndPositionManager {
   getVisibleCellRange({containerSize, offset}) {
     const totalSize = this.getTotalSize();
 
-    if (totalSize === 0) {
-      return {};
-    }
+    if (totalSize === 0) { return {}; }
 
     const maxOffset = offset + containerSize;
     const start = this._findNearestCell(offset);
