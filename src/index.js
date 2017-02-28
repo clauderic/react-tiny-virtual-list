@@ -1,7 +1,7 @@
 import React, {PureComponent, PropTypes} from 'react';
 import CellSizeAndPositionManager from './CellSizeAndPositionManager';
 
-const STYLE_WRAPPER = {overflow: 'auto', willChange: 'transform'};
+const STYLE_WRAPPER = {overflow: 'auto', willChange: 'transform', WebkitOverflowScrolling: 'touch'};
 const STYLE_INNER = {position: 'relative', overflow: 'hidden', width: '100%', minHeight: '100%'};
 const STYLE_ROW = {position: 'absolute', left: 0, width: '100%'};
 
