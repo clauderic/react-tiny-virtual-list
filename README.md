@@ -1,5 +1,5 @@
 <div align="center" style="margin-bottom: 30px;">
-<img src="https://cloud.githubusercontent.com/assets/1416436/23347339/b7094992-fc6f-11e6-93bf-13b60538f142.png" width="150"/>
+<img src="https://cloud.githubusercontent.com/assets/1416436/23387281/9a628ec4-fd29-11e6-9a1a-09f755c21a14.png" width="224"/>
 </div>
 
 # react-tiny-virtual-list
@@ -9,7 +9,7 @@
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/clauderic/react-tiny-virtual-list/blob/master/LICENSE)
 [![Gitter](https://badges.gitter.im/clauderic/react-tiny-virtual-list.svg)](https://gitter.im/clauderic/react-tiny-virtual-list)
 
-* **Tiny & dependency free** – 5kb minified, ~2kb gzipped
+* **Tiny & dependency free** – ~2kb gzipped
 * **Render millions of rows**, without breaking a sweat
 * **Scroll to index** or **set the initial scroll offset**
 * **Supports fixed** or **variable row heights**
