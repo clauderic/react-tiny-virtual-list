@@ -71,8 +71,8 @@ render(
 | rowHeight          |                  | ✓         | Either a fixed row height (number), an array containing the heights of all the rows in your list, or a function that returns the height of a row given its index: `(index: number): number` |
 | scrollTop          | Number           |           | Can be used to control the vertical scroll offset; Useful for setting an initial scroll offset                                                                                              |
 | scrollToIndex      | Number           |           | Row index to ensure visible (by forcefully scrolling if necessary)                                                                                                                          |
-| scrollToAlignment  |                  |           | Used in combination with `scrollToIndex`, this prop controls the alignment of the scrolled to row. One of: 'auto', 'start', 'center' or 'end'                                               |
-| overscanCount      | Number           |           | Number of extra buffer rows to render above/below the visible rows. Tweaking this can help reduce scroll flickering on certain browers/devices.                                             |
+| scrollToAlignment  |                  |           | Used in combination with `scrollToIndex`, this prop controls the alignment of the scrolled to row. One of: 'start', 'center' or 'end'                                                       |
+| overscanCount      | Number           |           | Number of extra buffer rows to render above/below the visible rows. Tweaking this can help reduce scroll flickering on certain browsers/devices.                                            |
 | estimatedRowHeight | Number           |           | Used to estimate the total height of the list before all of its rows have actually been measured. The estimated total height is progressively adjusted as rows are rendered.                |
 
 ## Reporting Issues

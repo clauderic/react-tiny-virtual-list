@@ -101,7 +101,7 @@ export default class CellSizeAndPositionManager {
    * @return Offset to use to ensure the specified cell is visible
    */
   getUpdatedOffsetForIndex({
-    align = 'auto',
+    align = 'start',
     containerSize,
     currentOffset,
     targetIndex,
@@ -117,9 +117,6 @@ export default class CellSizeAndPositionManager {
     let idealOffset;
 
     switch (align) {
-      case 'start':
-        idealOffset = maxOffset;
-        break;
       case 'end':
         idealOffset = minOffset;
         break;
@@ -127,7 +124,7 @@ export default class CellSizeAndPositionManager {
         idealOffset = maxOffset - (containerSize - datum.size) / 2;
         break;
       default:
-        idealOffset = Math.max(minOffset, Math.min(maxOffset, currentOffset));
+        idealOffset = maxOffset;
         break;
     }
 

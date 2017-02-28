@@ -20,7 +20,7 @@ export default class VirtualList extends PureComponent {
     rowHeight: PropTypes.oneOfType([PropTypes.number, PropTypes.array, PropTypes.func]).isRequired,
     scrollTop: PropTypes.number,
     scrollToIndex: PropTypes.number,
-    scrollToAlignment: PropTypes.oneOf(['auto', 'start', 'center', 'end']),
+    scrollToAlignment: PropTypes.oneOf(['start', 'center', 'end']),
     width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   }
 
@@ -60,12 +60,15 @@ export default class VirtualList extends PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
-    const {scrollTop, scrollToIndex} = this.props;
+    const {scrollTop, scrollToAlignment, scrollToIndex} = this.props;
 
     if (nextProps.scrollTop !== scrollTop) {
       this.scrollTo(nextProps.scrollTop);
-    } else if (nextProps.scrollToIndex !== scrollToIndex) {
-      this.scrollToIndex(nextProps.scrollToIndex);
+    } else if (
+      nextProps.scrollToIndex !== scrollToIndex ||
+      nextProps.scrollToAlignment !== scrollToAlignment
+    ) {
+      this.scrollToIndex(nextProps.scrollToIndex, nextProps.scrollToAlignment);
     }
   }
 
@@ -98,9 +101,9 @@ export default class VirtualList extends PureComponent {
     });
   }
 
-  scrollToIndex(index) {
+  scrollToIndex(index, scrollToAlignment = this.props.scrollToAlignment) {
     const {offset} = this.state;
-    const {height, scrollToAlignment} = this.props;
+    const {height} = this.props;
     const rowOffset = this.rowSizeAndPositionManager.getUpdatedOffsetForIndex({
       align: scrollToAlignment,
       containerSize: height,
