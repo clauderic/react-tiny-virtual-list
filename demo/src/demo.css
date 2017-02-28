@@ -1,0 +1,44 @@
+html, body {
+  margin: 0;
+  padding: 0;
+}
+body {
+  background: #fafafa;
+  font-family: -apple-system, BlinkMacSystemFont,'Helvetica','Arial', sans-serif;
+  color: #333;
+  -webkit-font-smoothing: antialiased;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  padding: 15px 23px;
+  background: #5586ff;
+  box-shadow: 0 0 5px rgba(0,0,0,.5);
+
+  color: #FFF;
+  font-weight: 600;
+}
+
+header img {
+  position: relative;
+  top: -2px;
+  margin-right: 15px;
+}
+
+.VirtualList {
+  margin: 20px;
+  background: #FFF;
+  border-radius: 2px;
+  box-shadow:
+    0 2px 2px 0 rgba(0,0,0,.14),
+    0 3px 1px -2px rgba(0,0,0,.2),
+    0 1px 5px 0 rgba(0,0,0,.12);
+}
+
+.Row {
+  padding: 0 10px;
+  box-sizing: border-box;
+  border-bottom: 1px solid #EEE;
+  line-height: 50px;
+}
