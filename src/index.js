@@ -14,9 +14,9 @@ export default class VirtualList extends PureComponent {
   static propTypes = {
     estimatedRowHeight: PropTypes.number,
     height: PropTypes.number.isRequired,
-    data: PropTypes.array.isRequired,
     overscanCount: PropTypes.number,
     renderRow: PropTypes.func.isRequired,
+    rowCount: PropTypes.number.isRequired,
     rowHeight: PropTypes.oneOfType([PropTypes.number, PropTypes.array, PropTypes.func]).isRequired,
     scrollTop: PropTypes.number,
     scrollToIndex: PropTypes.number,
@@ -29,9 +29,9 @@ export default class VirtualList extends PureComponent {
   };
 
   rowSizeAndPositionManager = new CellSizeAndPositionManager({
-    cellCount: this.props.data.length,
+    cellCount: this.props.rowCount,
     cellSizeGetter: ({index}) => this.getRowHeight(index),
-    estimatedCellSize: this.props.estimatedRowHeight || typeof this.props.rowHeight === "number" && this.props.rowHeight || 100,
+    estimatedCellSize: this.props.estimatedRowHeight || typeof this.props.rowHeight === "number" && this.props.rowHeight || 50,
   });
 
   _styleCache = {};
@@ -112,7 +112,7 @@ export default class VirtualList extends PureComponent {
   }
 
   getRowsForOffset(offset) {
-    const {height, overscanCount} = this.props;
+    const {height, overscanCount, rowCount} = this.props;
     let {start, stop} = this.rowSizeAndPositionManager.getVisibleCellRange({
       containerSize: height,
       offset,
@@ -120,7 +120,7 @@ export default class VirtualList extends PureComponent {
 
     if (overscanCount) {
       start = Math.max(0, start - overscanCount);
-      stop += overscanCount;
+      stop = Math.min(stop + overscanCount, rowCount);
     }
 
     return {start, stop};
@@ -145,9 +145,9 @@ export default class VirtualList extends PureComponent {
     const {
       estimatedRowHeight,
       height,
-      data,
       overscanCount,
       renderRow,
+      rowCount,
       rowHeight,
       scrollTop,
       scrollToIndex,
@@ -158,20 +158,19 @@ export default class VirtualList extends PureComponent {
     } = this.props;
     const {offset} = this.state;
     const {start, stop} = this._indices = this.getRowsForOffset(offset);
-    const rows = data.slice(start, stop);
+    const rows = [];
+
+    for (let index = start; index < stop; index++) {
+      rows.push(renderRow({
+        index,
+        style: this.getRowStyle(index),
+      }));
+    }
 
     return (
       <div ref={this._getRef} {...props} onScroll={this.handleScroll} style={{...STYLE_WRAPPER, ...style, height, width}}>
         <div style={{...STYLE_INNER, height: this.getTotalHeight()}}>
-          {rows.map((row, i) => {
-            const index = start + i;
-
-            return renderRow({
-              index,
-              row,
-              style: this.getRowStyle(index),
-            });
-          })}
+          {rows}
         </div>
       </div>
     );

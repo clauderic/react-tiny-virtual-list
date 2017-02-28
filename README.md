@@ -44,14 +44,16 @@ import React from 'react';
 import {render} from 'react-dom';
 import VirtualList from 'react-tiny-virtual-list';
 
+const data = ['A', 'B', 'C', 'D', 'E', 'F', ...];
+
 render(
   <VirtualList
     height={600}
-    data={['A', 'B', 'C', 'D', 'E', 'F', ...]}
+    rowCount={data.length}
     rowHeight={50} // Also supports variable heights (array or function getter)
-    renderRow={({row, index, style}) =>
+    renderRow={({index, style}) =>
       <div key={index} style={style}> // The style property contains the row's absolute position
-        Letter: {row}, Row: #{index}
+        Letter: {data[index]}, Row: #{index}
       </div>
     }
   />,
@@ -64,8 +66,8 @@ render(
 |:-------------------|:-----------------|:----------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | width              | Number or String |           | Width of List. Defaults to `100%`                                                                                                                                                           |
 | height             | Number           | ✓         | Height of List; this property will determine the number of rendered vs virtualized rows.                                                                                                    |
-| data               | Array            | ✓         | The array of data you want to render                                                                                                                                                        |
-| renderRow          | Function         | ✓         | Responsible for rendering a row: `({row: any, index: number, style: Object}): React.PropTypes.node`. The returned element must handle key and style.                                        |
+| rowCount           | Number           | ✓         | The number of rows you want to render                                                                                                                                                       |
+| renderRow          | Function         | ✓         | Responsible for rendering a row: `({index: number, style: Object}): React.PropTypes.node`. The returned element must handle key and style.                                                  |
 | rowHeight          |                  | ✓         | Either a fixed row height (number), an array containing the heights of all the rows in your list, or a function that returns the height of a row given its index: `(index: number): number` |
 | scrollTop          | Number           |           | Can be used to control the vertical scroll offset; Useful for setting an initial scroll offset                                                                                              |
 | scrollToIndex      | Number           |           | Row index to ensure visible (by forcefully scrolling if necessary)                                                                                                                          |
