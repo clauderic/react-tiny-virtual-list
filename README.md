@@ -10,9 +10,10 @@
 [![Gitter](https://badges.gitter.im/clauderic/react-tiny-virtual-list.svg)](https://gitter.im/clauderic/react-tiny-virtual-list)
 
 * **Tiny & dependency free** – ~2kb gzipped
-* **Render millions of rows**, without breaking a sweat
+* **Render millions of items**, without breaking a sweat
 * **Scroll to index** or **set the initial scroll offset**
-* **Supports fixed** or **variable row heights**
+* **Supports fixed** or **variable** heights/widths
+* **Vertical** or **Horizontal** lists
 
 Getting Started
 ---------------
@@ -49,10 +50,10 @@ const data = ['A', 'B', 'C', 'D', 'E', 'F', ...];
 render(
   <VirtualList
     height={600}
-    rowCount={data.length}
-    rowHeight={50} // Also supports variable heights (array or function getter)
-    renderRow={({index, style}) =>
-      <div key={index} style={style}> // The style property contains the row's absolute position
+    itemCount={data.length}
+    itemSize={50} // Also supports variable heights (array or function getter)
+    renderItem={({index, style}) =>
+      <div key={index} style={style}> // The style property contains the item's absolute position
         Letter: {data[index]}, Row: #{index}
       </div>
     }
@@ -62,18 +63,18 @@ render(
 ```
 
 ### Prop Types
-| Property           | Type             | Required? | Description                                                                                                                                                                                 |
-|:-------------------|:-----------------|:----------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| width              | Number or String |           | Width of List. Defaults to `100%`                                                                                                                                                           |
-| height             | Number           | ✓         | Height of List; this property will determine the number of rendered vs virtualized rows.                                                                                                    |
-| rowCount           | Number           | ✓         | The number of rows you want to render                                                                                                                                                       |
-| renderRow          | Function         | ✓         | Responsible for rendering a row: `({index: number, style: Object}): React.PropTypes.node`. The returned element must handle key and style.                                                  |
-| rowHeight          |                  | ✓         | Either a fixed row height (number), an array containing the heights of all the rows in your list, or a function that returns the height of a row given its index: `(index: number): number` |
-| scrollTop          | Number           |           | Can be used to control the vertical scroll offset; Useful for setting an initial scroll offset                                                                                              |
-| scrollToIndex      | Number           |           | Row index to ensure visible (by forcefully scrolling if necessary)                                                                                                                          |
-| scrollToAlignment  |                  |           | Used in combination with `scrollToIndex`, this prop controls the alignment of the scrolled to row. One of: 'start', 'center' or 'end'                                                       |
-| overscanCount      | Number           |           | Number of extra buffer rows to render above/below the visible rows. Tweaking this can help reduce scroll flickering on certain browsers/devices.                                            |
-| estimatedRowHeight | Number           |           | Used to estimate the total height of the list before all of its rows have actually been measured. The estimated total height is progressively adjusted as rows are rendered.                |
+| Property          | Type             | Required? | Description                                                                                                                                                                                                                |
+|:------------------|:-----------------|:----------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| width             | Number or String |           | Width of List. Defaults to `100%`                                                                                                                                                                                          |
+| height            | Number           | ✓         | Height of List; This property will determine the number of rendered vs virtualized items.                                                                                                                                  |
+| itemCount         | Number           | ✓         | The number of items you want to render                                                                                                                                                                                     |
+| renderItem        | Function         | ✓         | Responsible for rendering an item given it's index: `({index: number, style: Object}): React.PropTypes.node`. The returned element must handle key and style.                                                              |
+| itemSize          |                  | ✓         | Either a fixed height/width (depending on the scrollDirection), an array containing the heights of all the items in your list, or a function that returns the height of an item given its index: `(index: number): number` |
+| scrollTop         | Number           |           | Can be used to control the vertical scroll offset; Useful for setting an initial scroll offset                                                                                                                             |
+| scrollToIndex     | Number           |           | Item index to scroll to (by forcefully scrolling if necessary)                                                                                                                                                             |
+| scrollToAlignment |                  |           | Used in combination with `scrollToIndex`, this prop controls the alignment of the scrolled to item. One of: 'start', 'center' or 'end'                                                                                     |
+| overscanCount     | Number           |           | Number of extra buffer items to render above/below the visible items. Tweaking this can help reduce scroll flickering on certain browsers/devices.                                                                         |
+| estimatedItemSize | Number           |           | Used to estimate the total size of the list before all of its items have actually been measured. The estimated total height is progressively adjusted as items are rendered.                                               |
 
 ## Reporting Issues
 Found an issue? Please [report it](https://github.com/clauderic/react-tiny-virtual-list/issues) along with any relevant details to reproduce it.
