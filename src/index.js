@@ -6,9 +6,18 @@ const STYLE_INNER = {position: 'relative', overflow: 'hidden', width: '100%', mi
 const STYLE_ITEM = {position: 'absolute', left: 0, width: '100%'};
 const DIRECTION_VERTICAL = 'vertical';
 const DIRECTION_HORIZONTAL = 'horizontal';
+
 const scrollProp = {
   [DIRECTION_VERTICAL]: 'scrollTop',
   [DIRECTION_HORIZONTAL]: 'scrollLeft',
+};
+const sizeProp = {
+  [DIRECTION_VERTICAL]: 'height',
+  [DIRECTION_HORIZONTAL]: 'width',
+};
+const positionProp = {
+  [DIRECTION_VERTICAL]: 'top',
+  [DIRECTION_HORIZONTAL]: 'left',
 };
 
 export default class VirtualList extends PureComponent {
@@ -98,7 +107,7 @@ export default class VirtualList extends PureComponent {
 
     if (typeof itemSize === 'function') { return itemSize(index); }
 
-    return (Array.isArray(itemSize)) ? itemSize[index] : itemSize;
+    return Array.isArray(itemSize) ? itemSize[index] : itemSize;
   }
 
   setOffset(offset) {
@@ -116,20 +125,20 @@ export default class VirtualList extends PureComponent {
   }
 
   getOffsetForIndex(index, scrollToAlignment = this.props.scrollToAlignment) {
-    const {height} = this.props;
+    const {scrollDirection} = this.props;
 
     return this.sizeAndPositionManager.getUpdatedOffsetForIndex({
       align: scrollToAlignment,
-      containerSize: height,
+      containerSize: this.props[sizeProp[scrollDirection]],
       currentOffset: this.state && this.state.offset || 0,
       targetIndex: index,
     });
   }
 
   getRowsForOffset(offset) {
-    const {height, overscanCount, itemCount} = this.props;
+    const {itemCount, overscanCount, scrollDirection} = this.props;
     let {start, stop} = this.sizeAndPositionManager.getVisibleRange({
-      containerSize: height,
+      containerSize: this.props[sizeProp[scrollDirection]],
       offset,
     });
 
@@ -145,12 +154,13 @@ export default class VirtualList extends PureComponent {
     const style = this._styleCache[index];
     if (style) { return style; }
 
+    const {scrollDirection} = this.props;
     const {size, offset} = this.sizeAndPositionManager.getSizeAndPositionForIndex(index);
 
     return this._styleCache[index] = {
       ...STYLE_ITEM,
-      height: size,
-      top: offset,
+      [sizeProp[scrollDirection]]: size,
+      [positionProp[scrollDirection]]: offset,
     };
   }
   cache = {};
@@ -183,7 +193,7 @@ export default class VirtualList extends PureComponent {
 
     return (
       <div ref={this._getRef} {...props} onScroll={this.handleScroll} style={{...STYLE_WRAPPER, ...style, height, width}}>
-        <div style={{...STYLE_INNER, height: this.sizeAndPositionManager.getTotalSize()}}>
+        <div style={{...STYLE_INNER, [sizeProp[scrollDirection]]: this.sizeAndPositionManager.getTotalSize()}}>
           {rows}
         </div>
       </div>
