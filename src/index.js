@@ -1,24 +1,19 @@
 import React, {PureComponent, PropTypes} from 'react';
 import SizeAndPositionManager from './SizeAndPositionManager';
+import {
+  ALIGN_CENTER,
+  ALIGN_END,
+  ALIGN_START,
+  DIRECTION_VERTICAL,
+  DIRECTION_HORIZONTAL,
+  positionProp,
+  scrollProp,
+  sizeProp,
+} from './constants';
 
 const STYLE_WRAPPER = {overflow: 'auto', willChange: 'transform', WebkitOverflowScrolling: 'touch'};
 const STYLE_INNER = {position: 'relative', overflow: 'hidden', width: '100%', minHeight: '100%'};
 const STYLE_ITEM = {position: 'absolute', left: 0, width: '100%'};
-const DIRECTION_VERTICAL = 'vertical';
-const DIRECTION_HORIZONTAL = 'horizontal';
-
-const scrollProp = {
-  [DIRECTION_VERTICAL]: 'scrollTop',
-  [DIRECTION_HORIZONTAL]: 'scrollLeft',
-};
-const sizeProp = {
-  [DIRECTION_VERTICAL]: 'height',
-  [DIRECTION_HORIZONTAL]: 'width',
-};
-const positionProp = {
-  [DIRECTION_VERTICAL]: 'top',
-  [DIRECTION_HORIZONTAL]: 'left',
-};
 
 export default class VirtualList extends PureComponent {
   static defaultProps = {
@@ -35,14 +30,14 @@ export default class VirtualList extends PureComponent {
     renderItem: PropTypes.func.isRequired,
     scrollOffset: PropTypes.number,
     scrollToIndex: PropTypes.number,
-    scrollToAlignment: PropTypes.oneOf(['start', 'center', 'end']),
+    scrollToAlignment: PropTypes.oneOf([ALIGN_START, ALIGN_CENTER, ALIGN_END]),
     scrollDirection: PropTypes.oneOf([DIRECTION_HORIZONTAL, DIRECTION_VERTICAL]).isRequired,
     width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   }
 
   sizeAndPositionManager = new SizeAndPositionManager({
     itemCount: this.props.itemCount,
-    itemSizeGetter: ({index}) => this.getRowHeight(index),
+    itemSizeGetter: ({index}) => this.getSize(index),
     estimatedItemSize: this.props.estimatedItemSize || typeof this.props.itemSize === "number" && this.props.itemSize || 50,
   });
 
@@ -60,17 +55,6 @@ export default class VirtualList extends PureComponent {
     this.rootNode = node;
   };
 
-  handleScroll = e => {
-    const {onScroll} = this.props;
-    const offset = this.getNodeOffset();
-
-    this.setOffset(offset);
-
-    if (typeof onScroll === 'function') {
-      onScroll(offset, e);
-    }
-  };
-
   componentDidMount() {
     const {scrollDirection, scrollOffset, scrollToIndex} = this.props;
 
@@ -82,15 +66,23 @@ export default class VirtualList extends PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
-    const {scrollOffset, scrollToAlignment, scrollToIndex} = this.props;
+    const {itemSize, scrollOffset, scrollToAlignment, scrollToIndex} = this.props;
 
     if (nextProps.scrollOffset !== scrollOffset) {
-      this.setOffset(nextProps.scrollOffset);
+      this.setState({
+        offset: nextProps.scrollOffset
+      });
     } else if (
       nextProps.scrollToIndex !== scrollToIndex ||
       nextProps.scrollToAlignment !== scrollToAlignment
     ) {
-      this.setOffset(this.getOffsetForIndex(nextProps.scrollToIndex, nextProps.scrollToAlignment));
+      this.setState({
+        offset: this.getOffsetForIndex(nextProps.scrollToIndex, nextProps.scrollToAlignment)
+      });
+    }
+
+    if (nextProps.itemSize !== itemSize) {
+      this.recomputeSizes();
     }
   }
 
@@ -102,17 +94,16 @@ export default class VirtualList extends PureComponent {
     }
   }
 
-  getRowHeight(index) {
-    const {itemSize} = this.props;
+  handleScroll = e => {
+    const {onScroll} = this.props;
+    const offset = this.getNodeOffset();
 
-    if (typeof itemSize === 'function') { return itemSize(index); }
-
-    return Array.isArray(itemSize) ? itemSize[index] : itemSize;
-  }
-
-  setOffset(offset) {
     this.setState({offset});
-  }
+
+    if (typeof onScroll === 'function') {
+      onScroll(offset, e);
+    }
+  };
 
   getNodeOffset() {
     const {scrollDirection} = this.props;
@@ -130,27 +121,19 @@ export default class VirtualList extends PureComponent {
     return this.sizeAndPositionManager.getUpdatedOffsetForIndex({
       align: scrollToAlignment,
       containerSize: this.props[sizeProp[scrollDirection]],
-      currentOffset: this.state && this.state.offset || 0,
       targetIndex: index,
     });
   }
 
-  getRowsForOffset(offset) {
-    const {itemCount, overscanCount, scrollDirection} = this.props;
-    let {start, stop} = this.sizeAndPositionManager.getVisibleRange({
-      containerSize: this.props[sizeProp[scrollDirection]],
-      offset,
-    });
+  getSize(index) {
+    const {itemSize} = this.props;
 
-    if (overscanCount) {
-      start = Math.max(0, start - overscanCount);
-      stop = Math.min(stop + overscanCount, itemCount);
-    }
+    if (typeof itemSize === 'function') { return itemSize(index); }
 
-    return {start, stop};
+    return Array.isArray(itemSize) ? itemSize[index] : itemSize;
   }
 
-  getRowStyle(index) {
+  getStyle(index) {
     const style = this._styleCache[index];
     if (style) { return style; }
 
@@ -163,7 +146,12 @@ export default class VirtualList extends PureComponent {
       [positionProp[scrollDirection]]: offset,
     };
   }
-  cache = {};
+
+  recomputeSizes(startIndex = 0) {
+    this._styleCache = {};
+    this.sizeAndPositionManager.resetItem(startIndex);
+  }
+
   render() {
     const {
       estimatedItemSize,
@@ -181,20 +169,24 @@ export default class VirtualList extends PureComponent {
       ...props
     } = this.props;
     const {offset} = this.state;
-    const {start, stop} = this._indices = this.getRowsForOffset(offset);
-    const rows = [];
+    const {start, stop} = this.sizeAndPositionManager.getVisibleRange({
+      containerSize: this.props[sizeProp[scrollDirection]],
+      offset,
+      overscanCount,
+    });
+    const items = [];
 
     for (let index = start; index < stop; index++) {
-      rows.push(renderItem({
+      items.push(renderItem({
         index,
-        style: this.getRowStyle(index),
+        style: this.getStyle(index),
       }));
     }
 
     return (
       <div ref={this._getRef} {...props} onScroll={this.handleScroll} style={{...STYLE_WRAPPER, ...style, height, width}}>
         <div style={{...STYLE_INNER, [sizeProp[scrollDirection]]: this.sizeAndPositionManager.getTotalSize()}}>
-          {rows}
+          {items}
         </div>
       </div>
     );

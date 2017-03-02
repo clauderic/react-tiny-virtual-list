@@ -1,4 +1,5 @@
-/* Forked from https://github.com/bvaughn/react-virtualized/ 💖 */
+/* Forked from react-virtualized 💖 */
+import {ALIGN_START, ALIGN_END, ALIGN_CENTER} from './constants';
 
 export default class SizeAndPositionManager {
   constructor({
@@ -59,10 +60,7 @@ export default class SizeAndPositionManager {
   getSizeAndPositionOfLastMeasuredItem() {
     return this._lastMeasuredIndex >= 0
       ? this._itemSizeAndPositionData[this._lastMeasuredIndex]
-      : {
-        offset: 0,
-        size: 0,
-      };
+      : {offset: 0, size: 0};
   }
 
   /**
@@ -77,20 +75,15 @@ export default class SizeAndPositionManager {
   }
 
   /**
-   * Determines a new offset that ensures a certain item is visible, given the current offset.
-   * If the item is already visible then the current offset will be returned.
-   * If the current offset is too great or small, it will be adjusted just enough to ensure the specified index is visible.
+   * Determines a new offset that ensures a certain item is visible, given the alignment.
    *
-   * @param align Desired alignment within container; one of "auto" (default), "start", or "end"
+   * @param align Desired alignment within container; one of "start" (default), "center", or "end"
    * @param containerSize Size (width or height) of the container viewport
-   * @param currentOffset Container's current (x or y) offset
-   * @param totalSize Total size (width or height) of all items
    * @return Offset to use to ensure the specified item is visible
    */
   getUpdatedOffsetForIndex({
-    align = 'start',
+    align = ALIGN_START,
     containerSize,
-    currentOffset,
     targetIndex,
   }) {
     if (containerSize <= 0) {
@@ -104,10 +97,10 @@ export default class SizeAndPositionManager {
     let idealOffset;
 
     switch (align) {
-      case 'end':
+      case ALIGN_END:
         idealOffset = minOffset;
         break;
-      case 'center':
+      case ALIGN_CENTER:
         idealOffset = maxOffset - (containerSize - datum.size) / 2;
         break;
       default:
@@ -120,23 +113,26 @@ export default class SizeAndPositionManager {
     return Math.max(0, Math.min(totalSize - containerSize, idealOffset));
   }
 
-  getVisibleRange({containerSize, offset}) {
+  getVisibleRange({containerSize, offset, overscanCount}) {
     const totalSize = this.getTotalSize();
 
     if (totalSize === 0) { return {}; }
 
     const maxOffset = offset + containerSize;
-    const start = this._findNearestItem(offset);
+    let start = this._findNearestItem(offset);
+    let stop = start;
 
     const datum = this.getSizeAndPositionForIndex(start);
     offset = datum.offset + datum.size;
 
-    let stop = start;
-
     while (offset < maxOffset && stop < this._itemCount - 1) {
       stop++;
-
       offset += this.getSizeAndPositionForIndex(stop).size;
+    }
+
+    if (overscanCount) {
+      start = Math.max(0, start - overscanCount);
+      stop = Math.min(stop + overscanCount, this._itemCount);
     }
 
     return {
