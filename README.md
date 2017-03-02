@@ -3,13 +3,13 @@
 </div>
 
 # react-tiny-virtual-list
-> A tiny but mighty 2kb list virtualization component, with zero dependencies 💪
+> A tiny but mighty 3kb list virtualization component, with zero dependencies 💪
 
 [![npm version](https://img.shields.io/npm/v/react-tiny-virtual-list.svg)](https://www.npmjs.com/package/react-tiny-virtual-list)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/clauderic/react-tiny-virtual-list/blob/master/LICENSE)
 [![Gitter](https://badges.gitter.im/clauderic/react-tiny-virtual-list.svg)](https://gitter.im/clauderic/react-tiny-virtual-list)
 
-* **Tiny & dependency free** – ~2kb gzipped
+* **Tiny & dependency free** – Only 3kb gzipped
 * **Render millions of items**, without breaking a sweat
 * **Scroll to index** or **set the initial scroll offset**
 * **Supports fixed** or **variable** heights/widths
@@ -78,6 +78,14 @@ render(
 | overscanCount     | Number            |           | Number of extra buffer items to render above/below the visible items. Tweaking this can help reduce scroll flickering on certain browsers/devices.                                                                         |
 | estimatedItemSize | Number            |           | Used to estimate the total size of the list before all of its items have actually been measured. The estimated total height is progressively adjusted as items are rendered.                                               |
 *\* Width may only be a string when `scrollDirection` is `'vertical'`. Similarly, Height may only be a string if `scrollDirection` is `'horizontal'`*
+
+### Public Methods
+
+#### recomputeSizes (index: number)
+This method force recomputes the item sizes after the specificed index (these are normally cached).
+
+`VirtualList` has no way of knowing when its underlying data has changed, since it only receives a rowHeight property. If the rowHeight is a `number`, this isn't an issue, as it can compare before and after values and automatically call `recomputeSizes` internally.
+ However, if you're passing a function to `itemSize`, that type of comparison is error prone. In that event, you'll need to call `recomputeSizes` manually to inform the `VirtualList` that the size of it's items has changed.
 
 ## Reporting Issues
 Found an issue? Please [report it](https://github.com/clauderic/react-tiny-virtual-list/issues) along with any relevant details to reproduce it.
