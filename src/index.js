@@ -56,7 +56,7 @@ export default class VirtualList extends PureComponent {
   };
 
   componentDidMount() {
-    const {scrollDirection, scrollOffset, scrollToIndex} = this.props;
+    const {scrollOffset, scrollToIndex} = this.props;
 
     if (scrollOffset != null) {
       this.scrollTo(scrollOffset);
@@ -70,14 +70,14 @@ export default class VirtualList extends PureComponent {
 
     if (nextProps.scrollOffset !== scrollOffset) {
       this.setState({
-        offset: nextProps.scrollOffset
+        offset: nextProps.scrollOffset,
       });
     } else if (
       nextProps.scrollToIndex !== scrollToIndex ||
       nextProps.scrollToAlignment !== scrollToAlignment
     ) {
       this.setState({
-        offset: this.getOffsetForIndex(nextProps.scrollToIndex, nextProps.scrollToAlignment)
+        offset: this.getOffsetForIndex(nextProps.scrollToIndex, nextProps.scrollToAlignment),
       });
     }
 
@@ -87,7 +87,7 @@ export default class VirtualList extends PureComponent {
   }
 
   componentDidUpdate(nextProps, nextState) {
-    const {scrollDirection, offset} = this.state;
+    const {offset} = this.state;
 
     if (nextState.offset !== offset) {
       this.scrollTo(offset);
@@ -153,6 +153,7 @@ export default class VirtualList extends PureComponent {
   }
 
   render() {
+    /* eslint-disable no-unused-vars */
     const {
       estimatedItemSize,
       height,
