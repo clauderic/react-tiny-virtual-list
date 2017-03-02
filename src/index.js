@@ -177,7 +177,7 @@ export default class VirtualList extends PureComponent {
     });
     const items = [];
 
-    for (let index = start; index < stop; index++) {
+    for (let index = start; index <= stop; index++) {
       items.push(renderItem({
         index,
         style: this.getStyle(index),
