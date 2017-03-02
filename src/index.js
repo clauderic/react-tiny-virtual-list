@@ -66,23 +66,30 @@ export default class VirtualList extends PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
-    const {itemSize, scrollOffset, scrollToAlignment, scrollToIndex} = this.props;
+    const {itemCount, itemSize, scrollOffset, scrollToAlignment, scrollToIndex} = this.props;
+    const scrollPropsHaveChanged = (
+      nextProps.scrollToIndex !== scrollToIndex ||
+      nextProps.scrollToAlignment !== scrollToAlignment
+    );
+    const itemPropsHaveChanged = (
+      nextProps.itemCount !== itemCount ||
+      nextProps.itemSize !== itemSize
+    );
 
+    if (nextProps.itemSize !== itemSize) {
+      this.recomputeSizes();
+    }
     if (nextProps.scrollOffset !== scrollOffset) {
       this.setState({
         offset: nextProps.scrollOffset,
       });
     } else if (
-      nextProps.scrollToIndex !== scrollToIndex ||
-      nextProps.scrollToAlignment !== scrollToAlignment
+      scrollPropsHaveChanged ||
+      nextProps.scrollToIndex && itemPropsHaveChanged
     ) {
       this.setState({
-        offset: this.getOffsetForIndex(nextProps.scrollToIndex, nextProps.scrollToAlignment),
+        offset: this.getOffsetForIndex(nextProps.scrollToIndex, nextProps.scrollToAlignment, nextProps.itemCount),
       });
-    }
-
-    if (nextProps.itemSize !== itemSize) {
-      this.recomputeSizes();
     }
   }
 
@@ -115,8 +122,12 @@ export default class VirtualList extends PureComponent {
     this.rootNode[scrollProp[scrollDirection]] = value;
   }
 
-  getOffsetForIndex(index, scrollToAlignment = this.props.scrollToAlignment) {
+  getOffsetForIndex(index, scrollToAlignment = this.props.scrollToAlignment, itemCount = this.props.itemCount) {
     const {scrollDirection} = this.props;
+
+    if (index < 0 || index >= itemCount) {
+      index = 0;
+    }
 
     return this.sizeAndPositionManager.getUpdatedOffsetForIndex({
       align: scrollToAlignment,
