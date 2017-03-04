@@ -3,7 +3,7 @@
 </div>
 
 # react-tiny-virtual-list
-> A tiny but mighty 3kb list virtualization library, with zero dependencies 💪
+> A tiny but mighty list virtualization library, with zero dependencies 💪
 
 [![npm version](https://img.shields.io/npm/v/react-tiny-virtual-list.svg)](https://www.npmjs.com/package/react-tiny-virtual-list)
 [![Build Status](https://travis-ci.org/clauderic/react-tiny-virtual-list.svg?branch=master)](https://travis-ci.org/clauderic/react-tiny-virtual-list)
