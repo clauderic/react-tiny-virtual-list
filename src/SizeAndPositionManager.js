@@ -132,7 +132,7 @@ export default class SizeAndPositionManager {
 
     if (overscanCount) {
       start = Math.max(0, start - overscanCount);
-      stop = Math.min(stop + overscanCount, this._itemCount);
+      stop = Math.min(stop + overscanCount, this._itemCount - 1);
     }
 
     return {
