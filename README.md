@@ -79,7 +79,8 @@ render(
 | scrollToAlignment |                   |           | Used in combination with `scrollToIndex`, this prop controls the alignment of the scrolled to item. One of: 'start', 'center' or 'end'                                                                                     |
 | overscanCount     | Number            |           | Number of extra buffer items to render above/below the visible items. Tweaking this can help reduce scroll flickering on certain browsers/devices.                                                                         |
 | estimatedItemSize | Number            |           | Used to estimate the total size of the list before all of its items have actually been measured. The estimated total height is progressively adjusted as items are rendered.                                               |
-| onScroll          | Function          |           | Called on scroll events: `(scrollTop: number, event)`.                                                |
+| onScroll          | Function          |           | Called on scroll events: `(scrollTop: number, event)`.                                                                                                                                                                     |
+
 *\* Width may only be a string when `scrollDirection` is `'vertical'`. Similarly, Height may only be a string if `scrollDirection` is `'horizontal'`*
 
 ### Public Methods
