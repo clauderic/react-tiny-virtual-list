@@ -66,19 +66,38 @@ export default class VirtualList extends PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
-    const {itemCount, itemSize, scrollOffset, scrollToAlignment, scrollToIndex} = this.props;
+    const {
+      estimatedItemSize,
+      itemCount,
+      itemSize,
+      scrollOffset,
+      scrollToAlignment,
+      scrollToIndex,
+    } = this.props;
     const scrollPropsHaveChanged = (
       nextProps.scrollToIndex !== scrollToIndex ||
       nextProps.scrollToAlignment !== scrollToAlignment
     );
     const itemPropsHaveChanged = (
       nextProps.itemCount !== itemCount ||
-      nextProps.itemSize !== itemSize
+      nextProps.itemSize !== itemSize ||
+      nextProps.estimatedItemSize !== estimatedItemSize
     );
 
-    if (nextProps.itemSize !== itemSize) {
+    if (
+      nextProps.itemCount !== itemCount ||
+      nextProps.estimatedItemSize !== estimatedItemSize
+    ) {
+      this.sizeAndPositionManager.updateConfig({
+        itemCount: nextProps.itemCount,
+        estimatedItemSize: nextProps.itemSize,
+      });
+    }
+
+    if (itemPropsHaveChanged) {
       this.recomputeSizes();
     }
+
     if (nextProps.scrollOffset !== scrollOffset) {
       this.setState({
         offset: nextProps.scrollOffset,

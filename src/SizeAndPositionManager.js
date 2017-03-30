@@ -18,6 +18,14 @@ export default class SizeAndPositionManager {
     this._lastMeasuredIndex = -1;
   }
 
+  updateConfig({
+    itemCount,
+    estimatedItemSize,
+  }) {
+    this._itemCount = itemCount;
+    this._estimatedItemSize = estimatedItemSize;
+  }
+
   getLastMeasuredIndex() {
     return this._lastMeasuredIndex;
   }

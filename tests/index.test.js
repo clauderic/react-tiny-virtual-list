@@ -37,15 +37,19 @@ describe('VirtualList', () => {
       );
     });
 
-    it(
-      'does not render more children than available if the list is not filled',
-      () => {
-        const rendered = findDOMNode(
-          render(getComponent({itemCount: 5}), node),
-        );
-        expect(rendered.querySelectorAll('.item').length).toEqual(5);
-      },
-    );
+    it('does not render more children than available if the list is not filled', () => {
+      const rendered = findDOMNode(
+        render(getComponent({itemCount: 5}), node),
+      );
+      expect(rendered.querySelectorAll('.item').length).toEqual(5);
+    });
+
+    it('handles dynamically updating the number of items', () => {
+      for (let itemCount = 0; itemCount < 5; itemCount++) {
+        const rendered = findDOMNode(render(getComponent({itemCount}), node));
+        expect(rendered.querySelectorAll('.item').length).toEqual(itemCount);
+      }
+    });
   });
 
   /** Test scrolling via initial props */
