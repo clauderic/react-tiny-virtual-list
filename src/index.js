@@ -38,7 +38,7 @@ export default class VirtualList extends PureComponent {
   sizeAndPositionManager = new SizeAndPositionManager({
     itemCount: this.props.itemCount,
     itemSizeGetter: ({index}) => this.getSize(index),
-    estimatedItemSize: this.props.estimatedItemSize || typeof this.props.itemSize === "number" && this.props.itemSize || 50,
+    estimatedItemSize: this.getEstimatedItemSize(),
   });
 
   state = {
@@ -90,7 +90,7 @@ export default class VirtualList extends PureComponent {
     ) {
       this.sizeAndPositionManager.updateConfig({
         itemCount: nextProps.itemCount,
-        estimatedItemSize: nextProps.itemSize,
+        estimatedItemSize: this.getEstimatedItemSize(nextProps),
       });
     }
 
@@ -130,6 +130,10 @@ export default class VirtualList extends PureComponent {
       onScroll(offset, e);
     }
   };
+
+  getEstimatedItemSize(props = this.props) {
+    return props.estimatedItemSize || typeof props.itemSize === "number" && props.itemSize || 50;
+  }
 
   getNodeOffset() {
     const {scrollDirection} = this.props;
