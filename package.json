@@ -1,6 +1,6 @@
 {
   "name": "react-tiny-virtual-list",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "A tiny but mighty list virtualization component, with zero dependencies 💪",
   "main": "lib/index.js",
   "module": "es/index.js",
