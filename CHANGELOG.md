@@ -1,5 +1,7 @@
 Changelog
 ------------
+### 2.0.3
+Fixes a bug introduced in `2.0.2` where `nextProps.estimatedItemSize` wasn't being passed down properly in `componentWillReceiveProps`
 
 ### 2.0.2
 Added support for dynamic property updates to `itemCount` and `estimatedItemSize` [#3](https://github.com/clauderic/react-tiny-virtual-list/issues/3)
