@@ -19,7 +19,9 @@
     "test:watch": "jest --watch",
     "test:ci": "jest && codecov"
   },
-  "dependencies": {},
+  "dependencies": {
+    "prop-types": "^15.5.7"
+  },
   "peerDependencies": {
     "react": "15.x || 16.x"
   },
