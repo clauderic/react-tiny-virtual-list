@@ -1,5 +1,8 @@
 Changelog
 ------------
+### 2.0.4
+Use `prop-types` package for PropType validation for compatibility with React ^15.5
+
 ### 2.0.3
 Fixes a bug introduced in `2.0.2` where `nextProps.estimatedItemSize` wasn't being passed down properly in `componentWillReceiveProps`
 
