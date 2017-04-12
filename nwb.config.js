@@ -5,7 +5,8 @@ module.exports = {
     umd: {
       global: 'VirtualList',
       externals: {
-        react: 'React'
+        react: 'React',
+        'prop-types': 'PropTypes',
       }
     }
   },
