@@ -125,6 +125,10 @@ export default class VirtualList extends PureComponent {
     const {onScroll} = this.props;
     const offset = this.getNodeOffset();
 
+    if(offset < 0 || this.state.offset == offset || e.target !== this.rootNode) {
+      return;
+    }
+
     this.setState({offset});
 
     if (typeof onScroll === 'function') {
