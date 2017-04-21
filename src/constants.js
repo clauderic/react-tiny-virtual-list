@@ -3,6 +3,8 @@ export const ALIGN_CENTER = 'center';
 export const ALIGN_END = 'end';
 export const DIRECTION_VERTICAL = 'vertical';
 export const DIRECTION_HORIZONTAL = 'horizontal';
+export const SCROLL_CHANGE_OBSERVED = 'observed';
+export const SCROLL_CHANGE_REQUESTED = 'requested';
 
 export const scrollProp = {
   [DIRECTION_VERTICAL]: 'scrollTop',
