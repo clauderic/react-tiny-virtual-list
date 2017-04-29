@@ -7,6 +7,8 @@ import {
   ALIGN_START,
   DIRECTION_VERTICAL,
   DIRECTION_HORIZONTAL,
+  SCROLL_CHANGE_OBSERVED,
+  SCROLL_CHANGE_REQUESTED,
   positionProp,
   scrollProp,
   sizeProp,
@@ -48,6 +50,7 @@ export default class VirtualList extends PureComponent {
       this.props.scrollToIndex != null && this.getOffsetForIndex(this.props.scrollToIndex) ||
       0
     ),
+    scrollChangeReason: SCROLL_CHANGE_REQUESTED,
   };
 
   _styleCache = {};
@@ -102,6 +105,7 @@ export default class VirtualList extends PureComponent {
     if (nextProps.scrollOffset !== scrollOffset) {
       this.setState({
         offset: nextProps.scrollOffset,
+        scrollChangeReason: SCROLL_CHANGE_REQUESTED,
       });
     } else if (
       scrollPropsHaveChanged ||
@@ -109,6 +113,7 @@ export default class VirtualList extends PureComponent {
     ) {
       this.setState({
         offset: this.getOffsetForIndex(nextProps.scrollToIndex, nextProps.scrollToAlignment, nextProps.itemCount),
+        scrollChangeReason: SCROLL_CHANGE_REQUESTED,
       });
     }
   }
@@ -116,7 +121,7 @@ export default class VirtualList extends PureComponent {
   componentDidUpdate(nextProps, nextState) {
     const {offset} = this.state;
 
-    if (nextState.offset !== offset) {
+    if (nextState.offset !== offset && nextState.scrollChangeReason === SCROLL_CHANGE_REQUESTED) {
       this.scrollTo(offset);
     }
   }
@@ -125,7 +130,14 @@ export default class VirtualList extends PureComponent {
     const {onScroll} = this.props;
     const offset = this.getNodeOffset();
 
-    this.setState({offset});
+    if (offset < 0 || this.state.offset === offset || e.target !== this.rootNode) {
+      return;
+    }
+
+    this.setState({
+      offset,
+      scrollChangeReason: SCROLL_CHANGE_OBSERVED,
+    });
 
     if (typeof onScroll === 'function') {
       onScroll(offset, e);
