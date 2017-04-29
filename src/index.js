@@ -50,7 +50,7 @@ export default class VirtualList extends PureComponent {
       this.props.scrollToIndex != null && this.getOffsetForIndex(this.props.scrollToIndex) ||
       0
     ),
-    scrollChangeReason: SCROLL_CHANGE_REQUESTED
+    scrollChangeReason: SCROLL_CHANGE_REQUESTED,
   };
 
   _styleCache = {};
@@ -130,11 +130,14 @@ export default class VirtualList extends PureComponent {
     const {onScroll} = this.props;
     const offset = this.getNodeOffset();
 
-    if(offset < 0 || this.state.offset == offset || e.target !== this.rootNode) {
+    if (offset < 0 || this.state.offset === offset || e.target !== this.rootNode) {
       return;
     }
 
-    this.setState({offset, scrollChangeReason: SCROLL_CHANGE_OBSERVED});
+    this.setState({
+      offset,
+      scrollChangeReason: SCROLL_CHANGE_OBSERVED,
+    });
 
     if (typeof onScroll === 'function') {
       onScroll(offset, e);
