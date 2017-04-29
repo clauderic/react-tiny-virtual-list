@@ -1,5 +1,8 @@
 Changelog
 ------------
+### 2.0.5
+Fixes slow wheel scrolling / scroll-interruption issues with browsers such as Firefox (see [#7](https://github.com/clauderic/react-tiny-virtual-list/pull/7)). Thanks for the contribution [Magnitus-](https://github.com/Magnitus-)!
+
 ### 2.0.4
 Use `prop-types` package for PropType validation for compatibility with React ^15.5
 
