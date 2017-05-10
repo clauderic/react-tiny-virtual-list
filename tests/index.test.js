@@ -15,6 +15,7 @@ describe('VirtualList', () => {
         overscanCount={0}
         itemSize={ITEM_HEIGHT}
         itemCount={500}
+        scrollOnItemChange={false}
         renderItem={({index, style}) => (
           <div className="item" key={index} style={style}>
             Item #{index}
@@ -126,6 +127,16 @@ describe('VirtualList', () => {
       // Making rows taller pushes name off/beyond the scrolled area
       rendered = findDOMNode(
         render(getComponent({scrollToIndex: 50, itemSize: 20}), node),
+      );
+      expect(rendered.textContent).toContain('Item #50');
+    });
+
+    it('updates :scrollToIndex position when :itemCount changes and scrollOnItemChange flag is set', () => {
+      let rendered = findDOMNode(render(getComponent({scrollToIndex: 50, itemCount: 500, scrollOnItemChange: true}), node));
+      expect(rendered.textContent).toContain('Item #50');
+      // Making rows taller pushes name off/beyond the scrolled area
+      rendered = findDOMNode(
+        render(getComponent({scrollToIndex: 50, itemCount: 60, scrollOnItemChange: true}), node),
       );
       expect(rendered.textContent).toContain('Item #50');
     });

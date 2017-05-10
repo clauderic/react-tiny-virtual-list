@@ -23,6 +23,7 @@ export default class VirtualList extends PureComponent {
     overscanCount: 3,
     scrollDirection: DIRECTION_VERTICAL,
     width: '100%',
+    scrollOnItemChange: false,
   };
   static propTypes = {
     estimatedItemSize: PropTypes.number,
@@ -36,7 +37,8 @@ export default class VirtualList extends PureComponent {
     scrollToAlignment: PropTypes.oneOf([ALIGN_START, ALIGN_CENTER, ALIGN_END]),
     scrollDirection: PropTypes.oneOf([DIRECTION_HORIZONTAL, DIRECTION_VERTICAL]).isRequired,
     width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  }
+    scrollOnItemChange: PropTypes.bool,
+  };
 
   sizeAndPositionManager = new SizeAndPositionManager({
     itemCount: this.props.itemCount,
@@ -77,6 +79,7 @@ export default class VirtualList extends PureComponent {
       scrollOffset,
       scrollToAlignment,
       scrollToIndex,
+      scrollOnItemChange,
     } = this.props;
     const scrollPropsHaveChanged = (
       nextProps.scrollToIndex !== scrollToIndex ||
@@ -109,7 +112,7 @@ export default class VirtualList extends PureComponent {
       });
     } else if (
       scrollPropsHaveChanged ||
-      nextProps.scrollToIndex && itemPropsHaveChanged
+      (scrollOnItemChange || nextProps.scrollToIndex) && itemPropsHaveChanged
     ) {
       this.setState({
         offset: this.getOffsetForIndex(nextProps.scrollToIndex, nextProps.scrollToAlignment, nextProps.itemCount),
