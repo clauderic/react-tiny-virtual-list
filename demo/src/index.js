@@ -19,6 +19,21 @@ class Demo extends PureComponent {
           itemSize={50}
           className='VirtualList'
         />
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;RTL list:</p>
+        <VirtualList
+          width={400}
+          height={100}
+          itemCount={1000}
+          renderItem={({style, index}) =>
+            <div className='Row' style={style} key={index}>
+              Row #{index}
+            </div>
+          }
+          itemSize={50}
+          className='VirtualList'
+          scrollDirection='horizontal'
+          languageDirection='rtl'
+        />
       </div>
     );
   }
