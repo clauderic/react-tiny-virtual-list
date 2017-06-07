@@ -61,7 +61,6 @@ export default class SizeAndPositionManager {
 
       this._lastMeasuredIndex = index;
     }
-
     return this._itemSizeAndPositionData[index];
   }
 

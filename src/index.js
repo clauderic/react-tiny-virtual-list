@@ -5,10 +5,18 @@ import {
   ALIGN_CENTER,
   ALIGN_END,
   ALIGN_START,
+  CLIENT_WIDTH,
+  DEFAULT_SCROLL_DIRECTION,
   DIRECTION_VERTICAL,
   DIRECTION_HORIZONTAL,
+  LANGUAGE_DIRECTION_LTR,
+  LANGUAGE_DIRECTION_RTL,
   SCROLL_CHANGE_OBSERVED,
   SCROLL_CHANGE_REQUESTED,
+  SCROLL_WIDTH,
+  SCROLL_IMPLEMENTATION_DEFAULT,
+  SCROLL_IMPLEMENTATION_NEGATIVE,
+  SCROLL_IMPLEMENTATION_REVERSE,
   positionProp,
   scrollProp,
   sizeProp,
@@ -16,11 +24,43 @@ import {
 
 const STYLE_WRAPPER = {overflow: 'auto', willChange: 'transform', WebkitOverflowScrolling: 'touch'};
 const STYLE_INNER = {position: 'relative', overflow: 'hidden', width: '100%', minHeight: '100%'};
-const STYLE_ITEM = {position: 'absolute', left: 0, width: '100%'};
+const STYLE_ITEM = {position: 'absolute', width: '100%'};
+
+export function testScrollImplementaion() {
+  /* 
+    Different browsers have different implementaions of scrollLeft on elements with direction='rtl', this tests for an implementation
+    inspired by 
+      https://github.com/othree/jquery.rtl-scroll-type/blob/master/src/jquery.rtl-scroll.js &&
+      https://stackoverflow.com/questions/24276619/better-way-to-get-the-viewport-of-a-scrollable-div-in-rtl-mode/24394376#24394376 
+  */
+  let scrollImplementation = SCROLL_IMPLEMENTATION_DEFAULT;
+
+  const testDiv = document.createElement('div');
+  testDiv.innerHTML = '<div dir="rtl" class="test" style="font-size: 14px; width: 4px; height: 1px; position: absolute; top: 0px; overflow: scroll">ABCDEFASDASD</div>';
+  document.body.appendChild(testDiv);
+  const tester = testDiv.querySelector('.test');
+
+  if (tester.scrollLeft > 0) {
+    scrollImplementation = SCROLL_IMPLEMENTATION_REVERSE;
+  } else {
+    tester.scrollLeft = -1;
+    if (tester.scrollLeft === -1) {
+      scrollImplementation = SCROLL_IMPLEMENTATION_NEGATIVE;
+    } else {
+      scrollImplementation = SCROLL_IMPLEMENTATION_REVERSE;
+    }
+  }
+
+  document.body.removeChild(testDiv);
+  return scrollImplementation;
+}
+
+const scrollImplementation = testScrollImplementaion();
 
 export default class VirtualList extends PureComponent {
   static defaultProps = {
     overscanCount: 3,
+    languageDirection: LANGUAGE_DIRECTION_LTR,
     scrollDirection: DIRECTION_VERTICAL,
     width: '100%',
   };
@@ -31,6 +71,7 @@ export default class VirtualList extends PureComponent {
     itemSize: PropTypes.oneOfType([PropTypes.number, PropTypes.array, PropTypes.func]).isRequired,
     overscanCount: PropTypes.number,
     renderItem: PropTypes.func.isRequired,
+    languageDirection: PropTypes.oneOf([LANGUAGE_DIRECTION_RTL, LANGUAGE_DIRECTION_LTR]),
     scrollOffset: PropTypes.number,
     scrollToIndex: PropTypes.number,
     scrollToAlignment: PropTypes.oneOf([ALIGN_START, ALIGN_CENTER, ALIGN_END]),
@@ -149,13 +190,38 @@ export default class VirtualList extends PureComponent {
   }
 
   getNodeOffset() {
-    const {scrollDirection} = this.props;
-    return this.rootNode[scrollProp[scrollDirection]];
+    const {scrollDirection, languageDirection} = this.props;
+    
+    let offset;
+    
+    if (languageDirection === 'rtl') {
+      
+      if (scrollImplementation === SCROLL_IMPLEMENTATION_NEGATIVE) {
+     
+        offset = -this.rootNode[scrollProp[scrollDirection]];
+      } else if (scrollImplementation === SCROLL_IMPLEMENTATION_REVERSE) {
+     
+        offset = this.rootNode[SCROLL_WIDTH] - this.rootNode[scrollProp[scrollDirection]] - this.rootNode[CLIENT_WIDTH];
+      } else {
+
+        offset = this.rootNode[scrollProp[DEFAULT_SCROLL_DIRECTION]];
+      }
+    } else {
+      offset = this.rootNode[scrollProp[scrollDirection]];
+    }
+
+    return offset;
   }
 
   scrollTo(value) {
-    const {scrollDirection} = this.props;
-    this.rootNode[scrollProp[scrollDirection]] = value;
+    const {scrollDirection, languageDirection} = this.props;
+    if (languageDirection === 'rtl') {
+
+      this.rootNode[scrollProp[scrollDirection]] = this.rootNode[SCROLL_WIDTH] - value;
+    } else {
+      this.rootNode[scrollProp[scrollDirection]] = value;
+    }
+
   }
 
   getOffsetForIndex(index, scrollToAlignment = this.props.scrollToAlignment, itemCount = this.props.itemCount) {
@@ -184,13 +250,21 @@ export default class VirtualList extends PureComponent {
     const style = this._styleCache[index];
     if (style) { return style; }
 
-    const {scrollDirection} = this.props;
+    const {scrollDirection, languageDirection} = this.props;
     const {size, offset} = this.sizeAndPositionManager.getSizeAndPositionForIndex(index);
 
+    const LOCALIZED_STYLE_INNER = Object.assign({}, STYLE_ITEM, 
+      { 
+        left: languageDirection === 'rtl' ? 'auto' : 0, 
+        right: languageDirection === 'rtl' ? 0 : 'auto' ,
+      });
+
+    const offsetProp = (scrollDirection === DIRECTION_HORIZONTAL ? positionProp[scrollDirection][languageDirection] : positionProp[scrollDirection]);
+
     return this._styleCache[index] = {
-      ...STYLE_ITEM,
+      ...LOCALIZED_STYLE_INNER,
+      [offsetProp]: offset,
       [sizeProp[scrollDirection]]: size,
-      [positionProp[scrollDirection]]: offset,
     };
   }
 
@@ -208,6 +282,7 @@ export default class VirtualList extends PureComponent {
       renderItem,
       itemCount,
       itemSize,
+      languageDirection,
       scrollDirection,
       scrollOffset,
       scrollToIndex,
@@ -231,8 +306,10 @@ export default class VirtualList extends PureComponent {
       }));
     }
 
+    const LOCALIZED_STYLE_WRAPPER = Object.assign({}, STYLE_WRAPPER, { direction: languageDirection });
+
     return (
-      <div ref={this._getRef} {...props} onScroll={this.handleScroll} style={{...STYLE_WRAPPER, ...style, height, width}}>
+      <div ref={this._getRef} {...props} onScroll={this.handleScroll} style={{...LOCALIZED_STYLE_WRAPPER, ...style, height, width}}>
         <div style={{...STYLE_INNER, [sizeProp[scrollDirection]]: this.sizeAndPositionManager.getTotalSize()}}>
           {items}
         </div>
