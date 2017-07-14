@@ -26,7 +26,7 @@ export default class VirtualList extends PureComponent {
   };
   static propTypes = {
     estimatedItemSize: PropTypes.number,
-    height: PropTypes.number.isRequired,
+    height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
     itemCount: PropTypes.number.isRequired,
     itemSize: PropTypes.oneOfType([PropTypes.number, PropTypes.array, PropTypes.func]).isRequired,
     overscanCount: PropTypes.number,
@@ -35,7 +35,7 @@ export default class VirtualList extends PureComponent {
     scrollToIndex: PropTypes.number,
     scrollToAlignment: PropTypes.oneOf([ALIGN_START, ALIGN_CENTER, ALIGN_END]),
     scrollDirection: PropTypes.oneOf([DIRECTION_HORIZONTAL, DIRECTION_VERTICAL]).isRequired,
-    width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   }
 
   sizeAndPositionManager = new SizeAndPositionManager({
