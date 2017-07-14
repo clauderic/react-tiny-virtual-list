@@ -1,5 +1,8 @@
 Changelog
 ------------
+### 2.0.6
+Fix PropType definitions for `width` and `height` props ([#13](https://github.com/clauderic/react-tiny-virtual-list/issues/13))
+
 ### 2.0.5
 Fixes slow wheel scrolling / scroll-interruption issues with browsers such as Firefox (see [#7](https://github.com/clauderic/react-tiny-virtual-list/pull/7)). Thanks for the contribution [Magnitus-](https://github.com/Magnitus-)!
 
