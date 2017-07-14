@@ -18,6 +18,8 @@
 * **Supports fixed** or **variable** heights/widths
 * **Vertical** or **Horizontal** lists
 
+Check out the [demo](https://clauderic.github.io/react-tiny-virtual-list/) for some examples.
+
 Getting Started
 ---------------
 
