@@ -9,9 +9,9 @@ import {
   DIRECTION_HORIZONTAL,
   SCROLL_CHANGE_OBSERVED,
   SCROLL_CHANGE_REQUESTED,
-  positionProp,
-  scrollProp,
-  sizeProp,
+  positionProp, // object - selector
+  scrollProp,  // object - selector
+  sizeProp,  // object - selector
 } from './constants';
 
 const STYLE_WRAPPER = {overflow: 'auto', willChange: 'transform', WebkitOverflowScrolling: 'touch'};
@@ -102,7 +102,8 @@ export default class VirtualList extends PureComponent {
       this.recomputeSizes();
     }
 
-    if (nextProps.scrollOffset !== scrollOffset) {
+    if (nextProps.scrollOffset !== scrollOffset ||
+      nextProps.scrollOffset && itemPropsHaveChanged) {
       this.setState({
         offset: nextProps.scrollOffset,
         scrollChangeReason: SCROLL_CHANGE_REQUESTED,
@@ -118,11 +119,10 @@ export default class VirtualList extends PureComponent {
     }
   }
 
-  componentDidUpdate(nextProps, nextState) {
+  componentWillUpdate(nextProps, nextState) {
     const {offset} = this.state;
-
     if (nextState.offset !== offset && nextState.scrollChangeReason === SCROLL_CHANGE_REQUESTED) {
-      this.scrollTo(offset);
+      this.scrollTo(nextState.offset);
     }
   }
 

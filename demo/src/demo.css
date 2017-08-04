@@ -25,9 +25,12 @@ header img {
   top: -2px;
   margin-right: 15px;
 }
-
+.Root {
+  width: 100%;
+  padding: 20px;
+  box-sizing:border-box;
+}
 .VirtualList {
-  margin: 20px;
   background: #FFF;
   border-radius: 2px;
   box-shadow:
@@ -39,6 +42,7 @@ header img {
 .Row {
   padding: 0 10px;
   box-sizing: border-box;
-  border-bottom: 1px solid #EEE;
+  border-bottom: 1px solid #000;
   line-height: 50px;
+
 }
