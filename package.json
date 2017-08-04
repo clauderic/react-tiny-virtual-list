@@ -1,6 +1,6 @@
 {
   "name": "react-tiny-virtual-list",
-  "version": "2.0.6",
+  "version": "2.0.7",
   "description": "A tiny but mighty list virtualization component, with zero dependencies 💪",
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -38,7 +38,6 @@
     "eslint-plugin-jsx-a11y": "2.2.3",
     "eslint-plugin-react": "6.4.1",
     "jest": "^19.0.2",
-    "moment": "^2.18.1",
     "nwb": "0.15.x",
     "react": "^15.4.2",
     "react-addons-test-utils": "^15.4.2",

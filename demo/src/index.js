@@ -1,38 +1,50 @@
-import React, {PureComponent} from 'react';
-import { findDOMNode, render } from 'react-dom';
+import React from 'react';
+import { render } from 'react-dom';
 import './demo.css';
 import VirtualList from '../../src';
-import { generateCalendar, genLeftPartCalendar } from '../../tests/dateGenerator';
+import { generateArr } from '../../tests/arrGenerator';
 
 const HEIGHT = 400;
 const ITEM_HEIGHT = 50;
-const ITEM_COUNT = 500;
+const ITEM_COUNT = 200;
 const itemsAdded = 50;
-let childrenList = generateCalendar({count: ITEM_COUNT});
-let windowCenter = HEIGHT / 2;
-let scrollOffset = windowCenter;
+const windowCenter = ITEM_COUNT * ITEM_HEIGHT / 2 - HEIGHT / 2;
+const scrollOffset = windowCenter + ITEM_HEIGHT / 2;
+// let scrollToIndex;
 
-const addItems = () => {
-  const curDate = childrenList[0].strDate;
-  childrenList = [ ...genLeftPartCalendar(curDate, itemsAdded), ...childrenList];
-  scrollOffset = itemsAdded * ITEM_HEIGHT;
-  console.log('scrollOffset ', scrollOffset);
-};
+class Demo extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      childrenList: generateArr(ITEM_COUNT),
+      scrollOffset,
+      // scrollToIndex: null,
+    };
+    this.addItems=this.addItems.bind(this);
+  }
 
-class Demo extends PureComponent {
+  addItems () {
+    // const scrollToIndex = itemsAdded;
+    this.setState((prevState) => ({
+      scrollOffset: itemsAdded * ITEM_HEIGHT,
+      // scrollToIndex,
+      childrenList: [ ...generateArr(itemsAdded), ...prevState.childrenList],
+    }));
+  }
   render() {
     return (
       <div className='Root'>
-        <input type='button' name='addItemsBeforeFirst' value='addItemsBeforeFirst' onClick={addItems}/>
+        <input type='button' name='addItemsBeforeFirst' value='addItemsBeforeFirst' onClick={this.addItems}/>
         <VirtualList
           height={HEIGHT}
           overscanCount={0}
-          scrollOffset={scrollOffset}
+          scrollOffset={this.state.scrollOffset}
+          // scrollToIndex={this.state.scrollToIndex}
           itemSize={ITEM_HEIGHT}
-          itemCount={childrenList.length}
+          itemCount={this.state.childrenList.length}
           renderItem={({index, style}) => (
-            <div className="Row" key={childrenList[index].id} style={style}>
-              Item #{childrenList[index].strDate}
+            <div className="Row" key={this.state.childrenList[index]} style={style}>
+              Item #{this.state.childrenList[index]}
             </div>
           )}
           className='VirtualList'
