@@ -88,6 +88,9 @@ render(
 
 ### Public Methods
 
+#### forceUpdate ()
+This method force renders the list. Use when list order changes with sorting.
+
 #### recomputeSizes (index: number)
 This method force recomputes the item sizes after the specificed index (these are normally cached).
 
