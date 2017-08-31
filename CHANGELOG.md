@@ -1,5 +1,8 @@
 Changelog
 ------------
+### 2.1.1
+Renamed `onRowsRendered` prop to `onItemsRendered`.
+
 ### 2.1.0
 - Added `scrollToAlignment="auto"` option, which scrolls the least amount possible to ensure that the specified `scrollToIndex` item is fully visible [#19](https://github.com/clauderic/react-tiny-virtual-list/issues/19)
 - Added `onRowsRendered` prop that is invoked with information about the slice of rows that were just rendered [#14](https://github.com/clauderic/react-tiny-virtual-list/issues/13)
