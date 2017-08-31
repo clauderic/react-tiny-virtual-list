@@ -72,7 +72,7 @@ export interface Props {
   scrollDirection?: DIRECTION,
   style?: any,
   width?: number | string,
-  onRowsRendered?({startIndex, stopIndex}: RenderedRows): void,
+  onItemsRendered?({startIndex, stopIndex}: RenderedRows): void,
   onScroll?(offset: number, event: React.UIEvent<HTMLDivElement>): void,
   renderItem(itemInfo: ItemInfo): React.ReactNode,
 }
@@ -94,7 +94,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
     height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
     itemCount: PropTypes.number.isRequired,
     itemSize: PropTypes.oneOfType([PropTypes.number, PropTypes.array, PropTypes.func]).isRequired,
-    onRowsRendered: PropTypes.func,
+    onItemsRendered: PropTypes.func,
     overscanCount: PropTypes.number,
     renderItem: PropTypes.func.isRequired,
     scrollOffset: PropTypes.number,
@@ -275,7 +275,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
       renderItem,
       itemCount,
       itemSize,
-      onRowsRendered,
+      onItemsRendered,
       onScroll,
       scrollDirection = DIRECTION_VERTICAL,
       scrollOffset,
@@ -301,8 +301,8 @@ export default class VirtualList extends React.PureComponent<Props, State> {
         }));
       }
 
-      if (typeof onRowsRendered === 'function') {
-        onRowsRendered({
+      if (typeof onItemsRendered === 'function') {
+        onItemsRendered({
           startIndex: start,
           stopIndex: stop,
         });
