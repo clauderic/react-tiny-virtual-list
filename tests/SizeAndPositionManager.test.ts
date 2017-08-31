@@ -1,4 +1,6 @@
+import {} from 'jest';
 import SizeAndPositionManager from '../src/SizeAndPositionManager';
+import {ALIGNMENT} from '../src/constants';
 
 describe('SizeAndPositionManager', () => {
   function getItemSizeAndPositionManager(
@@ -7,10 +9,10 @@ describe('SizeAndPositionManager', () => {
       estimatedItemSize = 15,
     } = {},
   ) {
-    const itemSizeGetterCalls = [];
+    const itemSizeGetterCalls: number[] = [];
     const sizeAndPositionManager = new SizeAndPositionManager({
       itemCount,
-      itemSizeGetter: ({index}) => {
+      itemSizeGetter: (index: number) => {
         itemSizeGetterCalls.push(index);
         return 10;
       },
@@ -26,33 +28,33 @@ describe('SizeAndPositionManager', () => {
   describe('findNearestItem', () => {
     it('should error if given NaN', () => {
       const {sizeAndPositionManager} = getItemSizeAndPositionManager();
-      expect(() => sizeAndPositionManager._findNearestItem(NaN)).toThrow();
+      expect(() => sizeAndPositionManager.findNearestItem(NaN)).toThrow();
     });
 
     it('should handle offets outisde of bounds (to account for elastic scrolling)', () => {
         const {sizeAndPositionManager} = getItemSizeAndPositionManager();
-        expect(sizeAndPositionManager._findNearestItem(-100)).toEqual(0);
-        expect(sizeAndPositionManager._findNearestItem(1234567890)).toEqual(99);
+        expect(sizeAndPositionManager.findNearestItem(-100)).toEqual(0);
+        expect(sizeAndPositionManager.findNearestItem(1234567890)).toEqual(99);
       },
     );
 
     it('should find the first item', () => {
       const {sizeAndPositionManager} = getItemSizeAndPositionManager();
-      expect(sizeAndPositionManager._findNearestItem(0)).toEqual(0);
-      expect(sizeAndPositionManager._findNearestItem(9)).toEqual(0);
+      expect(sizeAndPositionManager.findNearestItem(0)).toEqual(0);
+      expect(sizeAndPositionManager.findNearestItem(9)).toEqual(0);
     });
 
     it('should find the last item', () => {
       const {sizeAndPositionManager} = getItemSizeAndPositionManager();
-      expect(sizeAndPositionManager._findNearestItem(990)).toEqual(99);
-      expect(sizeAndPositionManager._findNearestItem(991)).toEqual(99);
+      expect(sizeAndPositionManager.findNearestItem(990)).toEqual(99);
+      expect(sizeAndPositionManager.findNearestItem(991)).toEqual(99);
     });
 
     it(
       'should find the a item that exactly matches a specified offset in the middle',
       () => {
         const {sizeAndPositionManager} = getItemSizeAndPositionManager();
-        expect(sizeAndPositionManager._findNearestItem(100)).toEqual(10);
+        expect(sizeAndPositionManager.findNearestItem(100)).toEqual(10);
       },
     );
 
@@ -60,7 +62,7 @@ describe('SizeAndPositionManager', () => {
       'should find the item closest to (but before) the specified offset in the middle',
       () => {
         const {sizeAndPositionManager} = getItemSizeAndPositionManager();
-        expect(sizeAndPositionManager._findNearestItem(101)).toEqual(10);
+        expect(sizeAndPositionManager.findNearestItem(101)).toEqual(10);
       },
     );
   });
@@ -211,7 +213,7 @@ describe('SizeAndPositionManager', () => {
       currentOffset = 0,
       estimatedItemSize = 15,
       targetIndex = 0,
-    }) {
+    }: {align?: ALIGNMENT, itemCount?: number, itemSize?: number, containerSize?: number, currentOffset?: number, estimatedItemSize?: number, targetIndex?: number}) {
       const sizeAndPositionManager = new SizeAndPositionManager({
         itemCount,
         itemSizeGetter: () => itemSize,
@@ -361,6 +363,7 @@ describe('SizeAndPositionManager', () => {
       } = sizeAndPositionManager.getVisibleRange({
         containerSize: 50,
         offset: 0,
+        overscanCount: 0,
       });
       expect(start).toEqual(undefined);
       expect(stop).toEqual(undefined);
@@ -376,6 +379,7 @@ describe('SizeAndPositionManager', () => {
         } = sizeAndPositionManager.getVisibleRange({
           containerSize: 50,
           offset: 0,
+          overscanCount: 0,
         });
         expect(start).toEqual(0);
         expect(stop).toEqual(4);
@@ -392,6 +396,7 @@ describe('SizeAndPositionManager', () => {
         } = sizeAndPositionManager.getVisibleRange({
           containerSize: 50,
           offset: 425,
+          overscanCount: 0,
         });
         // 42 and 47 are partially visible
         expect(start).toEqual(42);
@@ -407,6 +412,7 @@ describe('SizeAndPositionManager', () => {
       } = sizeAndPositionManager.getVisibleRange({
         containerSize: 50,
         offset: 950,
+        overscanCount: 0,
       });
       expect(start).toEqual(95);
       expect(stop).toEqual(99);
