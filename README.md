@@ -38,7 +38,7 @@ You can also use a global-friendly UMD build:
 ```html
 <script src="react-tiny-virtual-list/umd/react-tiny-virtual-list.js"></script>
 <script>
-var VirtualList = window.VirtualList.default;
+var VirtualList = window.VirtualList;
 ...
 </script>
 ```
