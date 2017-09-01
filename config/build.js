@@ -12,26 +12,21 @@ const build = resolvePath(root, 'build');
 const intermediateBuild = resolvePath(root, './build-intermediate');
 const entry = resolvePath(intermediateBuild, './index.js');
 
-compileTypescript();
+compileTypescript('--target ES5');
 
-runRollup({entry, output: 'react-tiny-virtual-list.es.js', format: 'es'})
+Promise.all([
+  runRollup({entry, output: 'react-tiny-virtual-list.es.js', format: 'es'}),
+  runRollup({entry, output: 'react-tiny-virtual-list.cjs.js', format: 'cjs'}),
+  runRollup({entry, output: 'react-tiny-virtual-list.js', format: 'umd'}),
+  runRollup({entry, output: 'react-tiny-virtual-list.min.js', format: 'umd', minify: true}),
+])
   .then(cleanIntermediateBuild)
-  .then(() => {
-    compileTypescript('--target ES5');
-
-    Promise.all([
-      runRollup({entry, output: 'react-tiny-virtual-list.cjs.js', format: 'cjs'}),
-      runRollup({entry, output: 'react-tiny-virtual-list.js', format: 'umd'}),
-      runRollup({entry, output: 'react-tiny-virtual-list.min.js', format: 'umd', minify: true}),
-    ])
-      .then(cleanIntermediateBuild)
-      .catch((error) => {
-        // eslint-disable-next-line no-console
-        cleanIntermediateBuild().then(() => {
-          console.error(error);
-          process.exit(1);
-        });
-      });
+  .catch((error) => {
+    // eslint-disable-next-line no-console
+    cleanIntermediateBuild().then(() => {
+      console.error(error);
+      process.exit(1);
+    });
   });
 
 function runRollup({entry, output, format, minify = false, outputDir = build}) {
