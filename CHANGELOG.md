@@ -1,5 +1,8 @@
 Changelog
 ------------
+### 2.1.2
+Fixed build script for es modules build [#22](https://github.com/clauderic/react-tiny-virtual-list/issues/22)
+
 ### 2.1.1
 Renamed `onRowsRendered` prop to `onItemsRendered`.
 
