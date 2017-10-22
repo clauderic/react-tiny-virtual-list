@@ -7,7 +7,8 @@
   "jsnext:main": "build/react-tiny-virtual-list.es.js",
   "types": "types/index.d.ts",
   "files": [
-    "build"
+    "build",
+    "types"
   ],
   "scripts": {
     "build": "babel-node --presets es2015 ./config/build.js",
