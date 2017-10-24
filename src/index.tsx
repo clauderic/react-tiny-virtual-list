@@ -230,7 +230,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
 
     // Get the element's rect which will be used to determine how far the list
     // has scrolled once the scroll position has been set
-    const preScrollRect = this.scrollingNode.getBoundingClientRect();
+    const preScrollRect = this.innerNode.getBoundingClientRect();
 
     // Scroll to the right position
     this.rootNode[scrollProp[scrollDirection]] = value;
@@ -241,34 +241,34 @@ export default class VirtualList extends React.PureComponent<Props, State> {
 
     // The rect of the element after being scrolled lets us calculate the
     // distance it has travelled
-    const postScrollRect = this.scrollingNode.getBoundingClientRect();
+    const postScrollRect = this.innerNode.getBoundingClientRect();
 
     const delta = preScrollRect[positionProp[scrollDirection]] - postScrollRect[positionProp[scrollDirection]];
 
     // Set `translateX` or `translateY` (depending on the scroll direction) in
     // order to move the element back to the original position before scrolling
-    this.scrollingNode.style.transform = `${transformProp[scrollDirection]}(${delta}px)`;
+    this.innerNode.style.transform = `${transformProp[scrollDirection]}(${delta}px)`;
 
     // Wait for the next frame, then add a transition to the element and move it
     // back to its current position. This makes the browser animate the
     // transform as if the element moved from its location pre-scroll to its
     // final location.
     requestAnimationFrame(() => {
-      this.scrollingNode.style.transition = this.props.scrollToTransition || null;
-      this.scrollingNode.style.transitionProperty = "transform";
+      this.innerNode.style.transition = this.props.scrollToTransition || null;
+      this.innerNode.style.transitionProperty = 'transform';
 
-      this.scrollingNode.style.transform = null;
+      this.innerNode.style.transform = null;
     });
 
     // We listen to the end of the transition in order to perform some cleanup
     const reset = () => {
-      this.scrollingNode.style.transition = null;
-      this.scrollingNode.style.transitionProperty = null;
+      this.innerNode.style.transition = null;
+      this.innerNode.style.transitionProperty = null;
 
-      this.scrollingNode.removeEventListener("transitionend", reset);
+      this.innerNode.removeEventListener('transitionend', reset);
     }
 
-    this.scrollingNode.addEventListener("transitionend", reset);
+    this.innerNode.addEventListener('transitionend', reset);
   }
 
   getOffsetForIndex(index: number, scrollToAlignment = this.props.scrollToAlignment, itemCount: number = this.props.itemCount): number {
@@ -361,7 +361,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
     return (
       <div ref={this.getRootNodeRef} {...props} onScroll={this.handleScroll} style={{...STYLE_WRAPPER, ...style, height, width}}>
         <div
-          ref={this.getScrollingNodeRef}
+          ref={this.getInnerNodeRef}
           style={{
             ...STYLE_INNER,
             willChange: scrollToTransition !== undefined ? 'transform' : null,
@@ -380,7 +380,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
     this.rootNode = node;
   }
 
-  private getScrollingNodeRef = (node: HTMLDivElement): void => {
-    this.scrollingNode = node;
+  private getInnerNodeRef = (node: HTMLDivElement): void => {
+    this.innerNode = node;
   }
 }
