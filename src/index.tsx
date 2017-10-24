@@ -360,7 +360,16 @@ export default class VirtualList extends React.PureComponent<Props, State> {
 
     return (
       <div ref={this.getRootNodeRef} {...props} onScroll={this.handleScroll} style={{...STYLE_WRAPPER, ...style, height, width}}>
-        <div ref={this.getScrollingNodeRef} style={{...STYLE_INNER, [sizeProp[scrollDirection]]: this.sizeAndPositionManager.getTotalSize()}}>
+        <div
+          ref={this.getScrollingNodeRef}
+          style={{
+            ...STYLE_INNER,
+            willChange: scrollToTransition !== undefined ? 'transform' : null,
+            [sizeProp[
+              scrollDirection
+            ]]: this.sizeAndPositionManager.getTotalSize()
+          }}
+        >
           {items}
         </div>
       </div>
