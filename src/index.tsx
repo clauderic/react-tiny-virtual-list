@@ -183,10 +183,10 @@ export default class VirtualList extends React.PureComponent<Props, State> {
     }
   }
 
-  componentDidUpdate(_: Props, nextState: State) {
-    const {offset} = this.state;
+  componentDidUpdate(_: Props, prevState: State) {
+    const {offset, scrollChangeReason} = this.state;
 
-    if (nextState.offset !== offset && nextState.scrollChangeReason === SCROLL_CHANGE_REQUESTED) {
+    if (prevState.offset !== offset && scrollChangeReason === SCROLL_CHANGE_REQUESTED) {
       this.scrollTo(offset);
     }
   }
