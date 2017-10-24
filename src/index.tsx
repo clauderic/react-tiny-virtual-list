@@ -237,7 +237,13 @@ export default class VirtualList extends React.PureComponent<Props, State> {
 
     // Return early and perform no animation if forced, or no transition has
     // been passed
-    if (skipTransition || this.props.scrollToTransition === undefined) return;
+    if (
+        skipTransition ||
+        this.props.scrollToTransition === undefined ||
+        this.innerNode.style.transition !== ''
+      ) {
+      return;
+    }
 
     // The rect of the element after being scrolled lets us calculate the
     // distance it has travelled
@@ -254,16 +260,16 @@ export default class VirtualList extends React.PureComponent<Props, State> {
     // transform as if the element moved from its location pre-scroll to its
     // final location.
     requestAnimationFrame(() => {
-      this.innerNode.style.transition = this.props.scrollToTransition || null;
+      this.innerNode.style.transition = this.props.scrollToTransition || '';
       this.innerNode.style.transitionProperty = 'transform';
 
-      this.innerNode.style.transform = null;
+      this.innerNode.style.transform = '';
     });
 
     // We listen to the end of the transition in order to perform some cleanup
     const reset = () => {
-      this.innerNode.style.transition = null;
-      this.innerNode.style.transitionProperty = null;
+      this.innerNode.style.transition = '';
+      this.innerNode.style.transitionProperty = '';
 
       this.innerNode.removeEventListener('transitionend', reset);
     }
