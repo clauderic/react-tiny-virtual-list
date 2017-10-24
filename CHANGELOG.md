@@ -1,6 +1,9 @@
 Changelog
 ------------
 ### 2.1.3
+Fix misuse of second argument of `componentDidUpdate` as `nextState` (the actual argument is `prevState`) [#27](https://github.com/clauderic/react-tiny-virtual-list/pull/27). Thanks [@gabrielecirulli](https://github.com/gabrielecirulli)!
+
+### 2.1.3
 Include TypeScript type definitions in npm package [#26](https://github.com/clauderic/react-tiny-virtual-list/issues/26)
 
 ### 2.1.2
