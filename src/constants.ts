@@ -26,3 +26,8 @@ export const positionProp = {
   [DIRECTION_VERTICAL]: 'top',
   [DIRECTION_HORIZONTAL]: 'left',
 };
+
+export const transformProp = {
+  [DIRECTION_VERTICAL]: 'translateY',
+  [DIRECTION_HORIZONTAL]: 'translateX',
+};

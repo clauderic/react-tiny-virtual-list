@@ -16,6 +16,7 @@ import {
   positionProp,
   scrollProp,
   sizeProp,
+  transformProp
 } from './constants';
 
 const STYLE_WRAPPER: React.CSSProperties = {
@@ -70,6 +71,7 @@ export interface Props {
   scrollToIndex?: number,
   scrollToAlignment?: ALIGNMENT,
   scrollDirection?: DIRECTION,
+  scrollToTransition?: string,
   style?: any,
   width?: number | string,
   onItemsRendered?({startIndex, stopIndex}: RenderedRows): void,
@@ -100,6 +102,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
     scrollOffset: PropTypes.number,
     scrollToIndex: PropTypes.number,
     scrollToAlignment: PropTypes.oneOf([ALIGN_AUTO, ALIGN_START, ALIGN_CENTER, ALIGN_END]),
+    scrollToTransition: PropTypes.string,
     scrollDirection: PropTypes.oneOf([DIRECTION_HORIZONTAL, DIRECTION_VERTICAL]).isRequired,
     width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   };
@@ -120,6 +123,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
   };
 
   private rootNode: HTMLElement;
+  private scrollingNode: HTMLElement;
 
   private styleCache: StyleCache = {};
 
@@ -127,9 +131,9 @@ export default class VirtualList extends React.PureComponent<Props, State> {
     const {scrollOffset, scrollToIndex} = this.props;
 
     if (scrollOffset != null) {
-      this.scrollTo(scrollOffset);
+      this.scrollTo(scrollOffset, true);
     } else if (scrollToIndex != null) {
-      this.scrollTo(this.getOffsetForIndex(scrollToIndex));
+      this.scrollTo(this.getOffsetForIndex(scrollToIndex), true);
     }
   }
 
@@ -218,9 +222,53 @@ export default class VirtualList extends React.PureComponent<Props, State> {
     return this.rootNode[scrollProp[scrollDirection]];
   }
 
-  scrollTo(value: number) {
+  scrollTo(value: number, skipTransition: boolean = false) {
     const {scrollDirection = DIRECTION_VERTICAL} = this.props;
+
+    // We use the FLIP technique to animate the scroll change.
+    // See https://aerotwist.com/blog/flip-your-animations/ for more info.
+
+    // Get the element's rect which will be used to determine how far the list
+    // has scrolled once the scroll position has been set
+    const preScrollRect = this.scrollingNode.getBoundingClientRect();
+
+    // Scroll to the right position
     this.rootNode[scrollProp[scrollDirection]] = value;
+
+    // Return early and perform no animation if forced, or no transition has
+    // been passed
+    if (skipTransition || this.props.scrollToTransition === undefined) return;
+
+    // The rect of the element after being scrolled lets us calculate the
+    // distance it has travelled
+    const postScrollRect = this.scrollingNode.getBoundingClientRect();
+
+    const delta = preScrollRect[positionProp[scrollDirection]] - postScrollRect[positionProp[scrollDirection]];
+
+    // Set `translateX` or `translateY` (depending on the scroll direction) in
+    // order to move the element back to the original position before scrolling
+    this.scrollingNode.style.transform = `${transformProp[scrollDirection]}(${delta}px)`;
+
+    // Wait for the next frame, then add a transition to the element and move it
+    // back to its current position. This makes the browser animate the
+    // transform as if the element moved from its location pre-scroll to its
+    // final location.
+    requestAnimationFrame(() => {
+      this.scrollingNode.style.transition = this.props.scrollToTransition || null;
+      this.scrollingNode.style.transitionProperty = "transform";
+
+      this.scrollingNode.style.transform = null;
+    });
+
+    // We listen to the end of the transition in order to perform some cleanup
+    const reset = () => {
+      this.scrollingNode.style.transition = null;
+      this.scrollingNode.style.transitionProperty = null;
+
+      this.scrollingNode.removeEventListener("transitionend", reset);
+    }
+
+    this.scrollingNode.addEventListener("transitionend", reset);
   }
 
   getOffsetForIndex(index: number, scrollToAlignment = this.props.scrollToAlignment, itemCount: number = this.props.itemCount): number {
@@ -278,6 +326,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
       onItemsRendered,
       onScroll,
       scrollDirection = DIRECTION_VERTICAL,
+      scrollToTransition,
       scrollOffset,
       scrollToIndex,
       scrollToAlignment,
@@ -310,15 +359,19 @@ export default class VirtualList extends React.PureComponent<Props, State> {
     }
 
     return (
-      <div ref={this.getRef} {...props} onScroll={this.handleScroll} style={{...STYLE_WRAPPER, ...style, height, width}}>
-        <div style={{...STYLE_INNER, [sizeProp[scrollDirection]]: this.sizeAndPositionManager.getTotalSize()}}>
+      <div ref={this.getRootNodeRef} {...props} onScroll={this.handleScroll} style={{...STYLE_WRAPPER, ...style, height, width}}>
+        <div ref={this.getScrollingNodeRef} style={{...STYLE_INNER, [sizeProp[scrollDirection]]: this.sizeAndPositionManager.getTotalSize()}}>
           {items}
         </div>
       </div>
     );
   }
 
-  private getRef = (node: HTMLDivElement): void => {
+  private getRootNodeRef = (node: HTMLDivElement): void => {
     this.rootNode = node;
+  }
+
+  private getScrollingNodeRef = (node: HTMLDivElement): void => {
+    this.scrollingNode = node;
   }
 }
