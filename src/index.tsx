@@ -123,7 +123,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
   };
 
   private rootNode: HTMLElement;
-  private scrollingNode: HTMLElement;
+  private innerNode: HTMLElement;
 
   private styleCache: StyleCache = {};
 
