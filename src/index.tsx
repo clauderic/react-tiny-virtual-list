@@ -50,8 +50,8 @@ interface StyleCache {
 }
 
 export interface ItemInfo {
- index: number,
- style: ItemStyle,
+  index: number,
+  style: ItemStyle,
 }
 
 export interface RenderedRows {
@@ -73,8 +73,9 @@ export interface Props {
   style?: any,
   width?: number | string,
   onItemsRendered?({startIndex, stopIndex}: RenderedRows): void,
-  onScroll?(offset: number, event: React.UIEvent<HTMLDivElement>): void,
+  onScroll?(offset: number, event: React.UIEvent<HTMLElement>): void,
   renderItem(itemInfo: ItemInfo): React.ReactNode,
+  renderWrapper?(outerProps: any, ref: any, innerStyle: any, items: React.ReactNode[]): React.ReactElement<any>,
 }
 
 export interface State {
@@ -82,9 +83,20 @@ export interface State {
   scrollChangeReason: SCROLL_CHANGE_REASON,
 }
 
+function defaultRenderWrapper(outerProps: any, ref: (node: HTMLElement) => void, innerStyle: React.CSSProperties , items: React.ReactNode[]) {
+  return (
+    <div ref={ref} {...outerProps}>
+      <div style={innerStyle}>
+        {items}
+      </div>
+    </div>);
+}
+
+
 export default class VirtualList extends React.PureComponent<Props, State> {
   static defaultProps = {
     overscanCount: 3,
+    renderWrapper: defaultRenderWrapper,
     scrollDirection: DIRECTION_VERTICAL,
     width: '100%',
   };
@@ -97,6 +109,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
     onItemsRendered: PropTypes.func,
     overscanCount: PropTypes.number,
     renderItem: PropTypes.func.isRequired,
+    renderWrapper: PropTypes.func,
     scrollOffset: PropTypes.number,
     scrollToIndex: PropTypes.number,
     scrollToAlignment: PropTypes.oneOf([ALIGN_AUTO, ALIGN_START, ALIGN_CENTER, ALIGN_END]),
@@ -191,7 +204,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
     }
   }
 
-  handleScroll = (e: React.UIEvent<HTMLDivElement>)  => {
+  handleScroll = (e: React.UIEvent<HTMLElement>)  => {
     const {onScroll} = this.props;
     const offset = this.getNodeOffset();
 
@@ -273,6 +286,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
       height,
       overscanCount = 3,
       renderItem,
+      renderWrapper = defaultRenderWrapper,
       itemCount,
       itemSize,
       onItemsRendered,
@@ -309,16 +323,15 @@ export default class VirtualList extends React.PureComponent<Props, State> {
       }
     }
 
-    return (
-      <div ref={this.getRef} {...props} onScroll={this.handleScroll} style={{...STYLE_WRAPPER, ...style, height, width}}>
-        <div style={{...STYLE_INNER, [sizeProp[scrollDirection]]: this.sizeAndPositionManager.getTotalSize()}}>
-          {items}
-        </div>
-      </div>
+    return renderWrapper(
+      { ...props, onScroll: this.handleScroll, style: { ...STYLE_WRAPPER, ...style, height, width } },
+      this.getRef,
+      { ...STYLE_INNER, [sizeProp[scrollDirection]]: this.sizeAndPositionManager.getTotalSize() },
+      items,
     );
   }
 
-  private getRef = (node: HTMLDivElement): void => {
+  private getRef = (node: HTMLElement): void => {
     this.rootNode = node;
   }
 }
