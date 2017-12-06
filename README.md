@@ -21,7 +21,7 @@
 * **Supports fixed** or **variable** heights/widths
 * **Vertical** or **Horizontal** lists
 
-Check out the [demo](https://clauderic.github.io/react-tiny-virtual-list/) for some examples.
+Check out the [demo](https://clauderic.github.io/react-tiny-virtual-list/) for some examples, or take it for a test drive right away in [Code Sandbox](https://codesandbox.io/s/kymm7z9qr).
 
 Getting Started
 ---------------
@@ -99,7 +99,7 @@ This method force recomputes the item sizes after the specified index (these are
  However, if you're passing a function to `itemSize`, that type of comparison is error prone. In that event, you'll need to call `recomputeSizes` manually to inform the `VirtualList` that the size of its items has changed.
 
 ## Reporting Issues
-Found an issue? Please [report it](https://github.com/clauderic/react-tiny-virtual-list/issues) along with any relevant details to reproduce it.
+Found an issue? Please [report it](https://github.com/clauderic/react-tiny-virtual-list/issues) along with any relevant details to reproduce it. If you can, please provide a live demo replicating the issue you're describing. You can [fork this Code Sandbox](https://codesandbox.io/s/kymm7z9qr) as a starting point.
 
 ## Contributions
 Feature requests / pull requests are welcome, though please take a moment to make sure your contributions fits within the scope of the project. [Learn how to contribute](https://github.com/clauderic/react-tiny-virtual-list/blob/master/CONTRIBUTING.md)
