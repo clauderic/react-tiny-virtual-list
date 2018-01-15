@@ -13,8 +13,6 @@
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/clauderic/react-tiny-virtual-list/blob/master/LICENSE)
 [![Gitter](https://badges.gitter.im/clauderic/react-tiny-virtual-list.svg)](https://gitter.im/clauderic/react-tiny-virtual-list)
 
-<a target='_blank' rel='nofollow' href='https://app.codesponsor.io/link/oN9PDWZz8fQcbh9sxpDEUvD5/clauderic/react-tiny-virtual-list'>  <img alt='Sponsor' width='888' height='68' src='https://app.codesponsor.io/embed/oN9PDWZz8fQcbh9sxpDEUvD5/clauderic/react-tiny-virtual-list.svg' /></a>
-
 * **Tiny & dependency free** – Only 3kb gzipped
 * **Render millions of items**, without breaking a sweat
 * **Scroll to index** or **set the initial scroll offset**
