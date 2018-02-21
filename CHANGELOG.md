@@ -1,5 +1,8 @@
 Changelog
 ------------
+### 2.1.5
+Allow children to be passed and renderend alongside items
+
 ### 2.1.3
 Fix misuse of second argument of `componentDidUpdate` as `nextState` (the actual argument is `prevState`) [#27](https://github.com/clauderic/react-tiny-virtual-list/pull/27). Thanks [@gabrielecirulli](https://github.com/gabrielecirulli)!
 
