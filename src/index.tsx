@@ -72,6 +72,7 @@ export interface Props {
   scrollDirection?: DIRECTION,
   style?: any,
   width?: number | string,
+  children?: React.ReactNode,
   onItemsRendered?({startIndex, stopIndex}: RenderedRows): void,
   onScroll?(offset: number, event: React.UIEvent<HTMLDivElement>): void,
   renderItem(itemInfo: ItemInfo): React.ReactNode,
@@ -102,6 +103,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
     scrollToAlignment: PropTypes.oneOf([ALIGN_AUTO, ALIGN_START, ALIGN_CENTER, ALIGN_END]),
     scrollDirection: PropTypes.oneOf([DIRECTION_HORIZONTAL, DIRECTION_VERTICAL]).isRequired,
     width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+    children: PropTypes.node,
   };
 
   sizeAndPositionManager = new SizeAndPositionManager({
@@ -283,6 +285,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
       scrollToAlignment,
       style,
       width,
+      children,
       ...props,
     } = this.props;
     const {offset} = this.state;
@@ -312,6 +315,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
     return (
       <div ref={this.getRef} {...props} onScroll={this.handleScroll} style={{...STYLE_WRAPPER, ...style, height, width}}>
         <div style={{...STYLE_INNER, [sizeProp[scrollDirection]]: this.sizeAndPositionManager.getTotalSize()}}>
+          {children}
           {items}
         </div>
       </div>
