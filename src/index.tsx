@@ -54,7 +54,7 @@ export interface ItemInfo {
  style: ItemStyle,
 }
 
-export interface RenderedRows {
+export interface RenderedRowsInfo {
   startIndex: number,
   stopIndex: number,
   visibleStartIndex?: number,
@@ -75,7 +75,7 @@ export interface Props {
   scrollDirection?: DIRECTION,
   style?: any,
   width?: number | string,
-  onItemsRendered?({startIndex, stopIndex, visibleStartIndex, visibleStopIndex}: RenderedRows): void,
+  onItemsRendered?({startIndex, stopIndex, visibleStartIndex, visibleStopIndex}: RenderedRowsInfo): void,
   onScroll?(offset: number, event: React.UIEvent<HTMLDivElement>): void,
   renderItem(itemInfo: ItemInfo): React.ReactNode,
 }
@@ -292,13 +292,13 @@ export default class VirtualList extends React.PureComponent<Props, State> {
 
     const items: React.ReactNode[] = [];
      if ( this.sizeAndPositionManager.getTotalSize() > 0) {
-      const renderedRows = this.sizeAndPositionManager.getVisibleRange({
+      const renderedRowsInfo = this.sizeAndPositionManager.getVisibleRange({
         containerSize: this.props[sizeProp[scrollDirection]] || 0,
         offset,
         overscanCount,
       });
       // TODO Implement setters for this 2 parameters. I think getVisibleRange's return value should be extended.
-      for (let index = renderedRows.startIndex; index <= renderedRows.stopIndex; index++) {
+      for (let index = renderedRowsInfo.startIndex; index <= renderedRowsInfo.stopIndex; index++) {
         items.push(renderItem({
           index,
           style: this.getStyle(index),
@@ -306,7 +306,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
       }
 
       if (typeof onItemsRendered === 'function') {
-        onItemsRendered(renderedRows);
+        onItemsRendered(renderedRowsInfo);
       }
     }
 

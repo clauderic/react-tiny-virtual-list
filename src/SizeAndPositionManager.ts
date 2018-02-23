@@ -1,6 +1,6 @@
 /* Forked from react-virtualized 💖 */
 import {ALIGNMENT, ALIGN_START, ALIGN_END, ALIGN_CENTER} from './constants';
-import {RenderedRows} from './index';
+import {RenderedRowsInfo} from './index';
 
 export type ItemSizeGetter = (index: number) => number;
 export type ItemSize = number | number[] | ItemSizeGetter;
@@ -153,7 +153,7 @@ export default class SizeAndPositionManager {
     containerSize,
     offset,
     overscanCount,
-  }: {containerSize: number, offset: number, overscanCount: number}): RenderedRows {
+  }: {containerSize: number, offset: number, overscanCount: number}): RenderedRowsInfo {
 
     const maxOffset = offset + containerSize;
     let start = this.findNearestItem(offset);
