@@ -57,7 +57,10 @@ export interface ItemInfo {
 export interface RenderedRows {
   startIndex: number,
   stopIndex: number,
+  visibleStartIndex?: number,
+  visibleStopIndex?: number,
 }
+
 
 export interface Props {
   className?: string,
@@ -72,7 +75,7 @@ export interface Props {
   scrollDirection?: DIRECTION,
   style?: any,
   width?: number | string,
-  onItemsRendered?({startIndex, stopIndex}: RenderedRows): void,
+  onItemsRendered?({startIndex, stopIndex, visibleStartIndex, visibleStopIndex}: RenderedRows): void,
   onScroll?(offset: number, event: React.UIEvent<HTMLDivElement>): void,
   renderItem(itemInfo: ItemInfo): React.ReactNode,
 }
@@ -286,15 +289,16 @@ export default class VirtualList extends React.PureComponent<Props, State> {
       ...props,
     } = this.props;
     const {offset} = this.state;
-    const {start, stop} = this.sizeAndPositionManager.getVisibleRange({
-      containerSize: this.props[sizeProp[scrollDirection]] || 0,
-      offset,
-      overscanCount,
-    });
-    const items: React.ReactNode[] = [];
 
-    if (typeof start !== 'undefined' && typeof stop !== 'undefined') {
-      for (let index = start; index <= stop; index++) {
+    const items: React.ReactNode[] = [];
+     if ( this.sizeAndPositionManager.getTotalSize() > 0) {
+      const renderedRows = this.sizeAndPositionManager.getVisibleRange({
+        containerSize: this.props[sizeProp[scrollDirection]] || 0,
+        offset,
+        overscanCount,
+      });
+      // TODO Implement setters for this 2 parameters. I think getVisibleRange's return value should be extended.
+      for (let index = renderedRows.startIndex; index <= renderedRows.stopIndex; index++) {
         items.push(renderItem({
           index,
           style: this.getStyle(index),
@@ -302,10 +306,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
       }
 
       if (typeof onItemsRendered === 'function') {
-        onItemsRendered({
-          startIndex: start,
-          stopIndex: stop,
-        });
+        onItemsRendered(renderedRows);
       }
     }
 

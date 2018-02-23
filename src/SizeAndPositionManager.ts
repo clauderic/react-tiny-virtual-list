@@ -1,5 +1,6 @@
 /* Forked from react-virtualized 💖 */
 import {ALIGNMENT, ALIGN_START, ALIGN_END, ALIGN_CENTER} from './constants';
+import {RenderedRows} from './index';
 
 export type ItemSizeGetter = (index: number) => number;
 export type ItemSize = number | number[] | ItemSizeGetter;
@@ -152,12 +153,7 @@ export default class SizeAndPositionManager {
     containerSize,
     offset,
     overscanCount,
-  }: {containerSize: number, offset: number, overscanCount: number}): {start?: number, stop?: number} {
-    const totalSize = this.getTotalSize();
-
-    if (totalSize === 0) {
-      return {};
-    }
+  }: {containerSize: number, offset: number, overscanCount: number}): RenderedRows {
 
     const maxOffset = offset + containerSize;
     let start = this.findNearestItem(offset);
@@ -182,8 +178,9 @@ export default class SizeAndPositionManager {
     }
 
     return {
-      start,
-      stop,
+      startIndex: start,
+      stopIndex: stop,
+      // TODO calculate and return with visibleStartIndex and visibleStopIndex
     };
   }
 
