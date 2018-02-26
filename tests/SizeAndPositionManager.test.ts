@@ -357,32 +357,26 @@ describe('SizeAndPositionManager', () => {
       const {sizeAndPositionManager} = getItemSizeAndPositionManager({
         itemCount: 0,
       });
-      const {
-        start,
-        stop,
-      } = sizeAndPositionManager.getVisibleRange({
+      const { startIndex, stopIndex, visibleStartIndex, visibleStopIndex } = sizeAndPositionManager.getVisibleRange({
         containerSize: 50,
         offset: 0,
         overscanCount: 0,
       });
-      expect(start).toEqual(undefined);
-      expect(stop).toEqual(undefined);
+      expect(startIndex).toEqual(undefined);
+      expect(stopIndex).toEqual(undefined);
     });
 
     it(
       'should return a visible range of items for the beginning of the list',
       () => {
         const {sizeAndPositionManager} = getItemSizeAndPositionManager();
-        const {
-          start,
-          stop,
-        } = sizeAndPositionManager.getVisibleRange({
+        const { startIndex, stopIndex, visibleStartIndex, visibleStopIndex } = sizeAndPositionManager.getVisibleRange({
           containerSize: 50,
           offset: 0,
           overscanCount: 0,
         });
-        expect(start).toEqual(0);
-        expect(stop).toEqual(4);
+        expect(startIndex).toEqual(0);
+        expect(stopIndex).toEqual(4);
       },
     );
 
@@ -390,32 +384,26 @@ describe('SizeAndPositionManager', () => {
       'should return a visible range of items for the middle of the list where some are partially visible',
       () => {
         const {sizeAndPositionManager} = getItemSizeAndPositionManager();
-        const {
-          start,
-          stop,
-        } = sizeAndPositionManager.getVisibleRange({
+        const { startIndex, stopIndex, visibleStartIndex, visibleStopIndex } = sizeAndPositionManager.getVisibleRange({
           containerSize: 50,
           offset: 425,
           overscanCount: 0,
         });
         // 42 and 47 are partially visible
-        expect(start).toEqual(42);
-        expect(stop).toEqual(47);
+        expect(startIndex).toEqual(42);
+        expect(stopIndex).toEqual(47);
       },
     );
 
     it('should return a visible range of items for the end of the list', () => {
       const {sizeAndPositionManager} = getItemSizeAndPositionManager();
-      const {
-        start,
-        stop,
-      } = sizeAndPositionManager.getVisibleRange({
+      const { startIndex, stopIndex, visibleStartIndex, visibleStopIndex } = sizeAndPositionManager.getVisibleRange({
         containerSize: 50,
         offset: 950,
         overscanCount: 0,
       });
-      expect(start).toEqual(95);
-      expect(stop).toEqual(99);
+      expect(startIndex).toEqual(95);
+      expect(stopIndex).toEqual(99);
     });
   });
 

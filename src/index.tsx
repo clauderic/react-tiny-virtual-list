@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
-import SizeAndPositionManager, {ItemSize} from './SizeAndPositionManager';
+import SizeAndPositionManager, { ItemSize } from './SizeAndPositionManager';
 import {
   ALIGNMENT,
   ALIGN_AUTO,
@@ -31,7 +31,7 @@ const STYLE_INNER: React.CSSProperties = {
   minHeight: '100%',
 };
 
-const STYLE_ITEM: {position: 'absolute', left: number, width: string} = {
+const STYLE_ITEM: { position: 'absolute', left: number, width: string } = {
   position: 'absolute',
   left: 0,
   width: '100%',
@@ -50,8 +50,8 @@ interface StyleCache {
 }
 
 export interface ItemInfo {
- index: number,
- style: ItemStyle,
+  index: number,
+  style: ItemStyle,
 }
 
 export interface RenderedRowsInfo {
@@ -75,7 +75,7 @@ export interface Props {
   scrollDirection?: DIRECTION,
   style?: any,
   width?: number | string,
-  onItemsRendered?({startIndex, stopIndex, visibleStartIndex, visibleStopIndex}: RenderedRowsInfo): void,
+  onItemsRendered?({ startIndex, stopIndex, visibleStartIndex, visibleStopIndex }: RenderedRowsInfo): void,
   onScroll?(offset: number, event: React.UIEvent<HTMLDivElement>): void,
   renderItem(itemInfo: ItemInfo): React.ReactNode,
 }
@@ -127,7 +127,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
   private styleCache: StyleCache = {};
 
   componentDidMount() {
-    const {scrollOffset, scrollToIndex} = this.props;
+    const { scrollOffset, scrollToIndex } = this.props;
 
     if (scrollOffset != null) {
       this.scrollTo(scrollOffset);
@@ -187,15 +187,15 @@ export default class VirtualList extends React.PureComponent<Props, State> {
   }
 
   componentDidUpdate(_: Props, prevState: State) {
-    const {offset, scrollChangeReason} = this.state;
+    const { offset, scrollChangeReason } = this.state;
 
     if (prevState.offset !== offset && scrollChangeReason === SCROLL_CHANGE_REQUESTED) {
       this.scrollTo(offset);
     }
   }
 
-  handleScroll = (e: React.UIEvent<HTMLDivElement>)  => {
-    const {onScroll} = this.props;
+  handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const { onScroll } = this.props;
     const offset = this.getNodeOffset();
 
     if (offset < 0 || this.state.offset === offset || e.target !== this.rootNode) {
@@ -217,17 +217,17 @@ export default class VirtualList extends React.PureComponent<Props, State> {
   }
 
   getNodeOffset() {
-    const {scrollDirection = DIRECTION_VERTICAL} = this.props;
+    const { scrollDirection = DIRECTION_VERTICAL } = this.props;
     return this.rootNode[scrollProp[scrollDirection]];
   }
 
   scrollTo(value: number) {
-    const {scrollDirection = DIRECTION_VERTICAL} = this.props;
+    const { scrollDirection = DIRECTION_VERTICAL } = this.props;
     this.rootNode[scrollProp[scrollDirection]] = value;
   }
 
   getOffsetForIndex(index: number, scrollToAlignment = this.props.scrollToAlignment, itemCount: number = this.props.itemCount): number {
-    const {scrollDirection = DIRECTION_VERTICAL} = this.props;
+    const { scrollDirection = DIRECTION_VERTICAL } = this.props;
 
     if (index < 0 || index >= itemCount) {
       index = 0;
@@ -242,7 +242,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
   }
 
   getSize(index: number) {
-    const {itemSize} = this.props;
+    const { itemSize } = this.props;
 
     if (typeof itemSize === 'function') {
       return itemSize(index);
@@ -255,8 +255,8 @@ export default class VirtualList extends React.PureComponent<Props, State> {
     const style = this.styleCache[index];
     if (style) { return style; }
 
-    const {scrollDirection = DIRECTION_VERTICAL} = this.props;
-    const {size, offset} = this.sizeAndPositionManager.getSizeAndPositionForIndex(index);
+    const { scrollDirection = DIRECTION_VERTICAL } = this.props;
+    const { size, offset } = this.sizeAndPositionManager.getSizeAndPositionForIndex(index);
 
     return this.styleCache[index] = {
       ...STYLE_ITEM,
@@ -288,31 +288,33 @@ export default class VirtualList extends React.PureComponent<Props, State> {
       width,
       ...props,
     } = this.props;
-    const {offset} = this.state;
+    const { offset } = this.state;
 
     const items: React.ReactNode[] = [];
-     if ( this.sizeAndPositionManager.getTotalSize() > 0) {
+    if (this.sizeAndPositionManager.getTotalSize() > 0) {
       const renderedRowsInfo = this.sizeAndPositionManager.getVisibleRange({
         containerSize: this.props[sizeProp[scrollDirection]] || 0,
         offset,
         overscanCount,
       });
-      // TODO Implement setters for this 2 parameters. I think getVisibleRange's return value should be extended.
-      for (let index = renderedRowsInfo.startIndex; index <= renderedRowsInfo.stopIndex; index++) {
-        items.push(renderItem({
-          index,
-          style: this.getStyle(index),
-        }));
-      }
 
-      if (typeof onItemsRendered === 'function') {
-        onItemsRendered(renderedRowsInfo);
+      if (typeof renderedRowsInfo.startIndex !== 'undefined' && typeof renderedRowsInfo.stopIndex !== 'undefined') {
+        for (let index = renderedRowsInfo.startIndex; index <= renderedRowsInfo.stopIndex; index++) {
+          items.push(renderItem({
+            index,
+            style: this.getStyle(index),
+          }));
+        }
+
+        if (typeof onItemsRendered === 'function') {
+          onItemsRendered(renderedRowsInfo);
+        }
       }
     }
 
     return (
-      <div ref={this.getRef} {...props} onScroll={this.handleScroll} style={{...STYLE_WRAPPER, ...style, height, width}}>
-        <div style={{...STYLE_INNER, [sizeProp[scrollDirection]]: this.sizeAndPositionManager.getTotalSize()}}>
+      <div ref={this.getRef} {...props} onScroll={this.handleScroll} style={{ ...STYLE_WRAPPER, ...style, height, width }}>
+        <div style={{ ...STYLE_INNER, [sizeProp[scrollDirection]]: this.sizeAndPositionManager.getTotalSize() }}>
           {items}
         </div>
       </div>
