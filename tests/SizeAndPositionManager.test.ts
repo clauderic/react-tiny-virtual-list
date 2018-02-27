@@ -353,17 +353,21 @@ describe('SizeAndPositionManager', () => {
   });
 
   describe('getVisibleRange', () => {
-    it('should not return any indices if :itemCount is 0', () => {
+    it('should return the first row as start and stop', () => {
       const {sizeAndPositionManager} = getItemSizeAndPositionManager({
-        itemCount: 0,
+        itemCount: 1,
       });
       const { startIndex, stopIndex, visibleStartIndex, visibleStopIndex } = sizeAndPositionManager.getVisibleRange({
         containerSize: 50,
         offset: 0,
         overscanCount: 0,
       });
-      expect(startIndex).toEqual(undefined);
-      expect(stopIndex).toEqual(undefined);
+      console.log(startIndex);
+      console.log(stopIndex);
+      expect(startIndex).toEqual(0);
+      expect(stopIndex).toEqual(0);
+      expect(visibleStartIndex).toEqual(0);
+      expect(visibleStopIndex).toEqual(0);
     });
 
     it(
@@ -377,6 +381,8 @@ describe('SizeAndPositionManager', () => {
         });
         expect(startIndex).toEqual(0);
         expect(stopIndex).toEqual(4);
+        expect(visibleStartIndex).toEqual(0);
+        expect(visibleStopIndex).toEqual(4);
       },
     );
 
@@ -392,6 +398,8 @@ describe('SizeAndPositionManager', () => {
         // 42 and 47 are partially visible
         expect(startIndex).toEqual(42);
         expect(stopIndex).toEqual(47);
+        expect(visibleStartIndex).toEqual(42);
+        expect(visibleStopIndex).toEqual(47);
       },
     );
 
@@ -404,6 +412,21 @@ describe('SizeAndPositionManager', () => {
       });
       expect(startIndex).toEqual(95);
       expect(stopIndex).toEqual(99);
+      expect(visibleStartIndex).toEqual(95);
+      expect(visibleStopIndex).toEqual(99);
+    });
+
+    it('should return rendered and visible range, and of items for the end of the list', () => {
+      const {sizeAndPositionManager} = getItemSizeAndPositionManager();
+      const { startIndex, stopIndex, visibleStartIndex, visibleStopIndex } = sizeAndPositionManager.getVisibleRange({
+        containerSize: 50,
+        offset: 950,
+        overscanCount: 5,
+      });
+      expect(startIndex).toEqual(90);
+      expect(stopIndex).toEqual(99);
+      expect(visibleStartIndex).toEqual(95);
+      expect(visibleStopIndex).toEqual(99);
     });
   });
 
