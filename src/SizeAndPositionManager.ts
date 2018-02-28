@@ -172,13 +172,13 @@ export default class SizeAndPositionManager {
       offset += this.getSizeAndPositionForIndex(stop).size;
     }
 
-    let visibleStart = Math.max(0, start);
-    let visibleStop = Math.min(stop, this.itemCount - 1);
+    const visibleStart = Math.max(0, start);
+    const visibleStop = Math.min(stop, this.itemCount - 1);
 
     if (overscanCount) {
       start = Math.max(0, start - overscanCount);
       stop = Math.min(stop + overscanCount, this.itemCount - 1);
-    } 
+    }
 
     return {
       startIndex: start,
