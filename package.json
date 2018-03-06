@@ -20,7 +20,8 @@
     "test:ci": "npm run lint && npm run test && codecov"
   },
   "dependencies": {
-    "prop-types": "^15.5.7"
+    "prop-types": "^15.5.7",
+    "rollup-plugin-typescript2": "^0.11.1"
   },
   "peerDependencies": {
     "react": "15.x || 16.x"
