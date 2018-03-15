@@ -1,5 +1,7 @@
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
+import debounce from 'debounce'
+
 import SizeAndPositionManager, {ItemSize} from './SizeAndPositionManager';
 import {
   ALIGNMENT,
@@ -71,9 +73,10 @@ export interface Props {
   scrollToAlignment?: ALIGNMENT,
   scrollDirection?: DIRECTION,
   style?: any,
+  debounce?: number,
   width?: number | string,
   onItemsRendered?({startIndex, stopIndex}: RenderedRows): void,
-  onScroll?(offset: number, event: React.UIEvent<HTMLDivElement>): void,
+  onScroll?(offset: number, event: UIEvent): void,
   renderItem(itemInfo: ItemInfo): React.ReactNode,
 }
 
@@ -123,7 +126,15 @@ export default class VirtualList extends React.PureComponent<Props, State> {
 
   private styleCache: StyleCache = {};
 
+  constructor(props: Props){
+    super(props)
+    if (typeof props.debounce === 'number') {
+      this.handleScroll = debounce(this.handleScroll, props.debounce)
+    }
+  }
+
   componentDidMount() {
+    this.rootNode.addEventListener('scroll', this.handleScroll, {passive: true})
     const {scrollOffset, scrollToIndex} = this.props;
 
     if (scrollOffset != null) {
@@ -131,6 +142,10 @@ export default class VirtualList extends React.PureComponent<Props, State> {
     } else if (scrollToIndex != null) {
       this.scrollTo(this.getOffsetForIndex(scrollToIndex));
     }
+  }
+
+  componentWillUnmount() {
+    this.rootNode.removeEventListener('scroll', this.handleScroll)
   }
 
   componentWillReceiveProps(nextProps: Props) {
@@ -191,7 +206,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
     }
   }
 
-  handleScroll = (e: React.UIEvent<HTMLDivElement>)  => {
+  handleScroll = (e: UIEvent)  => {
     const {onScroll} = this.props;
     const offset = this.getNodeOffset();
 
@@ -270,6 +285,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
   render() {
     const {
       estimatedItemSize,
+      debounce,
       height,
       overscanCount = 3,
       renderItem,
@@ -310,7 +326,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
     }
 
     return (
-      <div ref={this.getRef} {...props} onScroll={this.handleScroll} style={{...STYLE_WRAPPER, ...style, height, width}}>
+      <div ref={this.getRef} {...props} style={{...STYLE_WRAPPER, ...style, height, width}}>
         <div style={{...STYLE_INNER, [sizeProp[scrollDirection]]: this.sizeAndPositionManager.getTotalSize()}}>
           {items}
         </div>

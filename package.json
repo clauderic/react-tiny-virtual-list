@@ -20,7 +20,8 @@
     "test:ci": "npm run lint && npm run test && codecov"
   },
   "dependencies": {
-    "prop-types": "^15.5.7"
+    "prop-types": "^15.5.7",
+    "debounce": "^1.1.0"
   },
   "peerDependencies": {
     "react": "15.x || 16.x"
@@ -57,9 +58,9 @@
     "rollup-plugin-commonjs": "^8.2.0",
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-uglify": "^2.0.1",
-    "tslint": "^5.7.0",
+    "tslint": "^5.9.1",
     "tslint-config-shopify": "^3.0.0",
-    "typescript": "^2.4.2"
+    "typescript": "^2.7.2"
   },
   "author": {
     "name": "Clauderic Demers",
