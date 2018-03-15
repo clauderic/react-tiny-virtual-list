@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
-import debounce from 'debounce'
+import debounce from 'debounce';
 
 import SizeAndPositionManager, {ItemSize} from './SizeAndPositionManager';
 import {
@@ -126,15 +126,15 @@ export default class VirtualList extends React.PureComponent<Props, State> {
 
   private styleCache: StyleCache = {};
 
-  constructor(props: Props){
-    super(props)
+  constructor(props: Props) {
+    super(props);
     if (typeof props.debounce === 'number') {
-      this.handleScroll = debounce(this.handleScroll, props.debounce)
+      this.handleScroll = debounce(this.handleScroll, props.debounce);
     }
   }
 
   componentDidMount() {
-    this.rootNode.addEventListener('scroll', this.handleScroll, {passive: true})
+    this.rootNode.addEventListener('scroll', this.handleScroll, {passive: true});
     const {scrollOffset, scrollToIndex} = this.props;
 
     if (scrollOffset != null) {
@@ -145,7 +145,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
   }
 
   componentWillUnmount() {
-    this.rootNode.removeEventListener('scroll', this.handleScroll)
+    this.rootNode.removeEventListener('scroll', this.handleScroll);
   }
 
   componentWillReceiveProps(nextProps: Props) {
@@ -285,7 +285,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
   render() {
     const {
       estimatedItemSize,
-      debounce,
+      debounce: ignore,
       height,
       overscanCount = 3,
       renderItem,
