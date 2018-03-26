@@ -1,5 +1,5 @@
 {
-  "name": "react-tiny-virtual-list",
+  "name": "@lpi/react-tiny-virtual-list",
   "version": "2.1.5",
   "description": "A tiny but mighty list virtualization component, with zero dependencies 💪",
   "main": "build/react-tiny-virtual-list.cjs.js",
