@@ -65,6 +65,7 @@ export interface Props {
   height: number | string,
   itemCount: number,
   itemSize: ItemSize,
+  itemsMinWidth: number,
   overscanCount?: number,
   scrollOffset?: number,
   scrollToIndex?: number,
@@ -95,6 +96,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
     height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
     itemCount: PropTypes.number.isRequired,
     itemSize: PropTypes.oneOfType([PropTypes.number, PropTypes.array, PropTypes.func]).isRequired,
+    itemsMinWidth: PropTypes.number,
     onItemsRendered: PropTypes.func,
     overscanCount: PropTypes.number,
     renderItem: PropTypes.func.isRequired,
@@ -277,6 +279,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
       renderItem,
       itemCount,
       itemSize,
+      itemsMinWidth,
       onItemsRendered,
       onScroll,
       scrollDirection = DIRECTION_VERTICAL,
@@ -314,7 +317,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
 
     return (
       <div ref={this.getRef} {...props} onScroll={this.handleScroll} style={{...STYLE_WRAPPER, ...style, height, width}}>
-        <div style={{...STYLE_INNER, [sizeProp[scrollDirection]]: this.sizeAndPositionManager.getTotalSize()}}>
+        <div style={{ ...STYLE_INNER, [sizeProp[scrollDirection]]: this.sizeAndPositionManager.getTotalSize(), minWidth: itemsMinWidth }}>
           {children}
           {items}
         </div>
