@@ -1,6 +1,6 @@
 {
-  "name": "react-tiny-virtual-list",
-  "version": "2.1.4",
+  "name": "@lpi/react-tiny-virtual-list",
+  "version": "2.1.6",
   "description": "A tiny but mighty list virtualization component, with zero dependencies 💪",
   "main": "build/react-tiny-virtual-list.cjs.js",
   "module": "build/react-tiny-virtual-list.es.js",
@@ -56,6 +56,7 @@
     "rollup-plugin-babel": "^3.0.2",
     "rollup-plugin-commonjs": "^8.2.0",
     "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-plugin-typescript2": "^0.11.1",
     "rollup-plugin-uglify": "^2.0.1",
     "tslint": "^5.7.0",
     "tslint-config-shopify": "^3.0.0",
