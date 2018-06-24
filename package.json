@@ -52,6 +52,7 @@
     "rollup-plugin-babel": "^3.0.2",
     "rollup-plugin-commonjs": "^8.2.0",
     "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-plugin-typescript2": "^0.15.0",
     "rollup-plugin-uglify": "^2.0.1",
     "tslint": "^5.10.0",
     "tslint-config-shopify": "^3.0.2",

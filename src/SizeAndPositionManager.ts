@@ -40,13 +40,20 @@ export default class SizeAndPositionManager {
 
   updateConfig({
     itemCount,
+    itemSizeGetter,
     estimatedItemSize,
-  }: {
-    itemCount: number;
-    estimatedItemSize: number;
-  }) {
-    this.itemCount = itemCount;
-    this.estimatedItemSize = estimatedItemSize;
+  }: Partial<Options>) {
+    if (itemCount != null) {
+      this.itemCount = itemCount;
+    }
+
+    if (estimatedItemSize != null) {
+      this.estimatedItemSize = estimatedItemSize;
+    }
+
+    if (itemSizeGetter != null) {
+      this.itemSizeGetter = itemSizeGetter;
+    }
   }
 
   getLastMeasuredIndex() {
