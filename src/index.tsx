@@ -120,13 +120,13 @@ export default class VirtualList extends React.PureComponent<Props, State> {
     width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   };
 
-  itemSizeGetter = (props: Props) => {
-    return index => this.getSize(index, props.itemSize);
+  itemSizeGetter = (itemSize: Props['itemSize']) => {
+    return index => this.getSize(index, itemSize);
   };
 
   sizeAndPositionManager = new SizeAndPositionManager({
     itemCount: this.props.itemCount,
-    itemSizeGetter: this.itemSizeGetter(this.props),
+    itemSizeGetter: this.itemSizeGetter(this.props.itemSize),
     estimatedItemSize: this.getEstimatedItemSize(),
   });
 
@@ -173,9 +173,11 @@ export default class VirtualList extends React.PureComponent<Props, State> {
       nextProps.itemSize !== itemSize ||
       nextProps.estimatedItemSize !== estimatedItemSize;
 
-    this.sizeAndPositionManager.updateConfig({
-      itemSizeGetter: this.itemSizeGetter(nextProps),
-    });
+    if (nextProps.itemSize !== itemSize) {
+      this.sizeAndPositionManager.updateConfig({
+        itemSizeGetter: this.itemSizeGetter(nextProps.itemSize),
+      });
+    }
 
     if (
       nextProps.itemCount !== itemCount ||
