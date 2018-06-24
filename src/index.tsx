@@ -141,7 +141,9 @@ export default class VirtualList extends React.PureComponent<Props, State> {
 
   componentDidMount() {
     const {scrollOffset, scrollToIndex} = this.props;
-    this.rootNode.addEventListener('scroll', this.handleScroll, true);
+    this.rootNode.addEventListener('scroll', this.handleScroll, {
+      passive: true,
+    });
 
     if (scrollOffset != null) {
       this.scrollTo(scrollOffset);
