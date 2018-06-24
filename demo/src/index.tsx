@@ -1,17 +1,17 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import VirtualList from '../../src/';
+import VirtualList, {ItemStyle} from '../../src';
 import './demo.css';
 
 class Demo extends React.Component {
-  renderItem = ({style, index}: {style: React.CSSProperties, index: number}) => {
+  renderItem = ({style, index}: {style: ItemStyle; index: number}) => {
     return (
       <div className="Row" style={style} key={index}>
         Row #{index}
       </div>
     );
-  }
+  };
 
   render() {
     return (

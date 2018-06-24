@@ -12,7 +12,7 @@
   ],
   "scripts": {
     "build": "babel-node --presets es2015 ./config/build.js",
-    "lint": "tslint './src/**/*.{ts,tsx}' --project tsconfig.json",
+    "lint": "eslint ./src --ext .ts,.tsx --max-warnings 0 --format codeframe",
     "start": "nwb serve-react-app demo/src/index.tsx --config ./config/nwb/config.js",
     "test": "jest --config ./config/jest/config.json --no-cache",
     "test:coverage": "npm run test -- --coverage",
@@ -38,12 +38,8 @@
     "babel-preset-react": "^6.23.0",
     "babel-preset-typescript": "^7.0.0-alpha.19",
     "codecov": "^1.0.1",
-    "eslint": "3.8.1",
-    "eslint-config-react-app": "^0.5.2",
-    "eslint-plugin-flowtype": "2.21.0",
-    "eslint-plugin-import": "2.0.1",
-    "eslint-plugin-jsx-a11y": "2.2.3",
-    "eslint-plugin-react": "6.4.1",
+    "eslint": "^4.10.0",
+    "eslint-plugin-shopify": "^22.1.0",
     "fs-extra": "^4.0.1",
     "jest": "^19.0.2",
     "nwb": "0.15.x",
@@ -57,9 +53,9 @@
     "rollup-plugin-commonjs": "^8.2.0",
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-uglify": "^2.0.1",
-    "tslint": "^5.7.0",
-    "tslint-config-shopify": "^3.0.0",
-    "typescript": "^2.4.2"
+    "tslint": "^5.10.0",
+    "tslint-config-shopify": "^3.0.2",
+    "typescript": "2.8.3"
   },
   "author": {
     "name": "Clauderic Demers",

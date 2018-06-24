@@ -1,22 +1,22 @@
 /* Forked from react-virtualized 💖 */
-import {ALIGNMENT, ALIGN_START, ALIGN_END, ALIGN_CENTER} from './constants';
+import {ALIGNMENT} from './constants';
 
 export type ItemSizeGetter = (index: number) => number;
 export type ItemSize = number | number[] | ItemSizeGetter;
 
 export interface SizeAndPosition {
-  size: number,
-  offset: number,
+  size: number;
+  offset: number;
 }
 
 interface SizeAndPositionData {
-  [id: number]: SizeAndPosition,
+  [id: number]: SizeAndPosition;
 }
 
 export interface Options {
-  itemCount: number,
-  itemSizeGetter: ItemSizeGetter,
-  estimatedItemSize: number,
+  itemCount: number;
+  itemSizeGetter: ItemSizeGetter;
+  estimatedItemSize: number;
 }
 
 export default class SizeAndPositionManager {
@@ -26,11 +26,7 @@ export default class SizeAndPositionManager {
   private lastMeasuredIndex: number;
   private itemSizeAndPositionData: SizeAndPositionData;
 
-  constructor({
-    itemCount,
-    itemSizeGetter,
-    estimatedItemSize,
-  }: Options) {
+  constructor({itemCount, itemSizeGetter, estimatedItemSize}: Options) {
     this.itemSizeGetter = itemSizeGetter;
     this.itemCount = itemCount;
     this.estimatedItemSize = estimatedItemSize;
@@ -45,7 +41,10 @@ export default class SizeAndPositionManager {
   updateConfig({
     itemCount,
     estimatedItemSize,
-  }: {itemCount: number, estimatedItemSize: number}) {
+  }: {
+    itemCount: number;
+    estimatedItemSize: number;
+  }) {
     this.itemCount = itemCount;
     this.estimatedItemSize = estimatedItemSize;
   }
@@ -60,13 +59,15 @@ export default class SizeAndPositionManager {
    */
   getSizeAndPositionForIndex(index: number) {
     if (index < 0 || index >= this.itemCount) {
-      throw Error(`Requested index ${index} is outside of range 0..${this.itemCount}`);
+      throw Error(
+        `Requested index ${index} is outside of range 0..${this.itemCount}`,
+      );
     }
 
     if (index > this.lastMeasuredIndex) {
       const lastMeasuredSizeAndPosition = this.getSizeAndPositionOfLastMeasuredItem();
-      let offset = lastMeasuredSizeAndPosition.offset +
-        lastMeasuredSizeAndPosition.size;
+      let offset =
+        lastMeasuredSizeAndPosition.offset + lastMeasuredSizeAndPosition.size;
 
       for (let i = this.lastMeasuredIndex + 1; i <= index; i++) {
         const size = this.itemSizeGetter(i);
@@ -103,7 +104,11 @@ export default class SizeAndPositionManager {
   getTotalSize(): number {
     const lastMeasuredSizeAndPosition = this.getSizeAndPositionOfLastMeasuredItem();
 
-    return lastMeasuredSizeAndPosition.offset + lastMeasuredSizeAndPosition.size + (this.itemCount - this.lastMeasuredIndex - 1) * this.estimatedItemSize;
+    return (
+      lastMeasuredSizeAndPosition.offset +
+      lastMeasuredSizeAndPosition.size +
+      (this.itemCount - this.lastMeasuredIndex - 1) * this.estimatedItemSize
+    );
   }
 
   /**
@@ -114,11 +119,16 @@ export default class SizeAndPositionManager {
    * @return Offset to use to ensure the specified item is visible
    */
   getUpdatedOffsetForIndex({
-    align = ALIGN_START,
+    align = ALIGNMENT.START,
     containerSize,
     currentOffset,
     targetIndex,
-  }: {align: ALIGNMENT | undefined, containerSize: number, currentOffset: number, targetIndex: number}): number {
+  }: {
+    align: ALIGNMENT | undefined;
+    containerSize: number;
+    currentOffset: number;
+    targetIndex: number;
+  }): number {
     if (containerSize <= 0) {
       return 0;
     }
@@ -130,13 +140,13 @@ export default class SizeAndPositionManager {
     let idealOffset;
 
     switch (align) {
-      case ALIGN_END:
+      case ALIGNMENT.END:
         idealOffset = minOffset;
         break;
-      case ALIGN_CENTER:
+      case ALIGNMENT.CENTER:
         idealOffset = maxOffset - (containerSize - datum.size) / 2;
         break;
-      case ALIGN_START:
+      case ALIGNMENT.START:
         idealOffset = maxOffset;
         break;
       default:
@@ -152,7 +162,11 @@ export default class SizeAndPositionManager {
     containerSize,
     offset,
     overscanCount,
-  }: {containerSize: number, offset: number, overscanCount: number}): {start?: number, stop?: number} {
+  }: {
+    containerSize: number;
+    offset: number;
+    overscanCount: number;
+  }): {start?: number; stop?: number} {
     const totalSize = this.getTotalSize();
 
     if (totalSize === 0) {
@@ -232,7 +246,15 @@ export default class SizeAndPositionManager {
     }
   }
 
-  private binarySearch({low, high, offset}: {low: number, high: number, offset: number}) {
+  private binarySearch({
+    low,
+    high,
+    offset,
+  }: {
+    low: number;
+    high: number;
+    offset: number;
+  }) {
     let middle = 0;
     let currentOffset = 0;
 
@@ -256,7 +278,7 @@ export default class SizeAndPositionManager {
     return 0;
   }
 
-  private exponentialSearch({index, offset}: {index: number, offset: number}) {
+  private exponentialSearch({index, offset}: {index: number; offset: number}) {
     let interval = 1;
 
     while (

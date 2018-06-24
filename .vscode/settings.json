@@ -1,0 +1,11 @@
+{
+  "editor.formatOnSave": true,
+  "prettier.eslintIntegration": true,
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "eslint.validate": [
+    "typescript",
+    "typescriptreact"
+  ],
+  "typescript.tsdk": "node_modules/typescript/lib"
+}
