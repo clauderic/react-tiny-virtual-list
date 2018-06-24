@@ -97,7 +97,7 @@ This method force recomputes the item sizes after the specified index (these are
  However, if you're passing a function to `itemSize`, that type of comparison is error prone. In that event, you'll need to call `recomputeSizes` manually to inform the `VirtualList` that the size of its items has changed.
 
 ### Common Issues with PureComponent 
-`react-tiny-virtual-list` uses [PureComponent](https://reactjs.org/docs/react-api.html#reactpurecomponent), so it only updates when it's props change. Therefore, if only the order of your data changes (eg ['a','b','c'] => ['d','e','f']), `react-tiny-virtual-list` has no way to know your data has changed and that it needs to re-render.
+`react-tiny-virtual-list` uses [PureComponent](https://reactjs.org/docs/react-api.html#reactpurecomponent), so it only updates when it's props change. Therefore, if only the order of your data changes (eg `['a','b','c']` => `['d','e','f']`), `react-tiny-virtual-list` has no way to know your data has changed and that it needs to re-render.
 
 You can force it to re-render by calling [forceUpdate](https://reactjs.org/docs/react-component.html#forceupdate) on it or by passing it an extra prop that will change every time your data changes.
 
