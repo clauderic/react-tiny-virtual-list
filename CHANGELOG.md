@@ -1,5 +1,9 @@
 ## Changelog
 
+### 2.1.6
+
+Revert inner wrapper position to `relative`. Using `position: absolute` on the inner wrapper causes scrolling issues in Safari.
+
 ### 2.1.5
 
 Fix itemSizeGetter bug when `scrollToIndex` is defined [#40](https://github.com/clauderic/react-tiny-virtual-list/issues/40), [#56](https://github.com/clauderic/react-tiny-virtual-list/pull/56)
