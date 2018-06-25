@@ -66,7 +66,7 @@ const STYLE_WRAPPER: React.CSSProperties = {
 };
 
 const STYLE_INNER: React.CSSProperties = {
-  position: 'absolute',
+  position: 'relative',
   width: '100%',
   minHeight: '100%',
 };
