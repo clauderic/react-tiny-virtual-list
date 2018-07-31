@@ -1,5 +1,9 @@
 ## Changelog
 
+### 2.2.0
+
+Added support for `stickyIndices`. Pass an array of indexes (eg. [0, 10, 25, 30]) to the `stickyIndices` prop to make certain items in the list sticky (position: sticky) [#55](https://github.com/clauderic/react-tiny-virtual-list/pull/55)
+
 ### 2.1.6
 
 Revert inner wrapper position to `relative`. Using `position: absolute` on the inner wrapper causes scrolling issues in Safari.
