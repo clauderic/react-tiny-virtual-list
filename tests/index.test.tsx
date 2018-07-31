@@ -5,17 +5,17 @@ import VirtualList from '../src';
 const HEIGHT = 100;
 const ITEM_HEIGHT = 10;
 
+interface ItemAttributes {
+  index: number;
+  style: React.CSSProperties;
+  className?: string;
+}
+
 describe('VirtualList', () => {
   let node: HTMLDivElement;
-  function renderItem({
-    index,
-    style,
-  }: {
-    index: number;
-    style: React.CSSProperties;
-  }) {
+  function renderItem({index, style, ...props}: ItemAttributes) {
     return (
-      <div className="item" key={index} style={style}>
+      <div className="item" key={index} style={style} {...props}>
         Item #{index}
       </div>
     );
@@ -55,6 +55,49 @@ describe('VirtualList', () => {
         render(getComponent({itemCount}), node);
         expect(node.querySelectorAll('.item')).toHaveLength(itemCount);
       }
+    });
+
+    describe('stickyIndices', () => {
+      const stickyIndices = [0, 10, 20, 30, 50];
+
+      function itemRenderer({index, style}) {
+        return renderItem({
+          index,
+          style,
+          className: stickyIndices.includes(index) ? 'item sticky' : 'item',
+        });
+      }
+
+      it('renders all sticky indices when scrollTop is zero', () => {
+        render(
+          getComponent({
+            itemCount: 100,
+            stickyIndices,
+            renderItem: itemRenderer,
+          }),
+          node,
+        );
+
+        expect(node.querySelectorAll('.sticky')).toHaveLength(
+          stickyIndices.length,
+        );
+      });
+
+      it('keeps sticky indices rendered when scrolling', () => {
+        render(
+          getComponent({
+            itemCount: 100,
+            stickyIndices,
+            renderItem: itemRenderer,
+            scrollOffset: 500,
+          }),
+          node,
+        );
+
+        expect(node.querySelectorAll('.sticky')).toHaveLength(
+          stickyIndices.length,
+        );
+      });
     });
   });
 

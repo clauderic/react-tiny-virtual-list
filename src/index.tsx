@@ -5,6 +5,8 @@ import {
   ALIGNMENT,
   DIRECTION,
   SCROLL_CHANGE_REASON,
+  marginProp,
+  oppositeMarginProp,
   positionProp,
   scrollProp,
   sizeProp,
@@ -12,7 +14,7 @@ import {
 
 export {DIRECTION as ScrollDirection} from './constants';
 
-export type ItemPosition = 'absolute';
+export type ItemPosition = 'absolute' | 'sticky';
 
 export interface ItemStyle {
   position: ItemPosition;
@@ -20,6 +22,11 @@ export interface ItemStyle {
   left: number;
   width: string | number;
   height?: number;
+  marginTop?: number;
+  marginLeft?: number;
+  marginRight?: number;
+  marginBottom?: number;
+  zIndex?: number;
 }
 
 interface StyleCache {
@@ -47,6 +54,7 @@ export interface Props {
   scrollToIndex?: number;
   scrollToAlignment?: ALIGNMENT;
   scrollDirection?: DIRECTION;
+  stickyIndices?: number[];
   style?: React.CSSProperties;
   width?: number | string;
   onItemsRendered?({startIndex, stopIndex}: RenderedRows): void;
@@ -83,6 +91,11 @@ const STYLE_ITEM: {
   width: '100%',
 };
 
+const STYLE_STICKY_ITEM = {
+  ...STYLE_ITEM,
+  position: 'sticky' as ItemPosition,
+};
+
 export default class VirtualList extends React.PureComponent<Props, State> {
   static defaultProps = {
     overscanCount: 3,
@@ -116,6 +129,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
       DIRECTION.HORIZONTAL,
       DIRECTION.VERTICAL,
     ]),
+    stickyIndices: PropTypes.arrayOf(PropTypes.number),
     style: PropTypes.object,
     width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   };
@@ -272,6 +286,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
       scrollOffset,
       scrollToIndex,
       scrollToAlignment,
+      stickyIndices,
       style,
       width,
       ...props
@@ -289,12 +304,31 @@ export default class VirtualList extends React.PureComponent<Props, State> {
       [sizeProp[scrollDirection]]: this.sizeAndPositionManager.getTotalSize(),
     };
 
-    if (typeof start !== 'undefined' && typeof stop !== 'undefined') {
-      for (let index = start; index <= stop; index++) {
+    if (stickyIndices != null && stickyIndices.length !== 0) {
+      stickyIndices.forEach((index: number) =>
         items.push(
           renderItem({
             index,
-            style: this.getStyle(index),
+            style: this.getStyle(index, true),
+          }),
+        ),
+      );
+
+      if (scrollDirection === DIRECTION.HORIZONTAL) {
+        innerStyle.display = 'flex';
+      }
+    }
+
+    if (typeof start !== 'undefined' && typeof stop !== 'undefined') {
+      for (let index = start; index <= stop; index++) {
+        if (stickyIndices != null && stickyIndices.includes(index)) {
+          continue;
+        }
+
+        items.push(
+          renderItem({
+            index,
+            style: this.getStyle(index, false),
           }),
         );
       }
@@ -362,8 +396,9 @@ export default class VirtualList extends React.PureComponent<Props, State> {
     return Array.isArray(itemSize) ? itemSize[index] : itemSize;
   }
 
-  private getStyle(index: number) {
+  private getStyle(index: number, sticky: boolean) {
     const style = this.styleCache[index];
+
     if (style) {
       return style;
     }
@@ -374,10 +409,18 @@ export default class VirtualList extends React.PureComponent<Props, State> {
       offset,
     } = this.sizeAndPositionManager.getSizeAndPositionForIndex(index);
 
-    return (this.styleCache[index] = {
-      ...STYLE_ITEM,
-      [sizeProp[scrollDirection]]: size,
-      [positionProp[scrollDirection]]: offset,
-    });
+    return (this.styleCache[index] = sticky
+      ? {
+          ...STYLE_STICKY_ITEM,
+          [sizeProp[scrollDirection]]: size,
+          [marginProp[scrollDirection]]: offset,
+          [oppositeMarginProp[scrollDirection]]: -(offset + size),
+          zIndex: 1,
+        }
+      : {
+          ...STYLE_ITEM,
+          [sizeProp[scrollDirection]]: size,
+          [positionProp[scrollDirection]]: offset,
+        });
   }
 }
