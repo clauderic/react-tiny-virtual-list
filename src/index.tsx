@@ -57,6 +57,7 @@ export interface Props {
   stickyIndices?: number[];
   style?: React.CSSProperties;
   width?: number | string;
+  preCalculateTotalHeight?: boolean; // added this
   onItemsRendered?({startIndex, stopIndex}: RenderedRows): void;
   onScroll?(offset: number, event: UIEvent): void;
   renderItem(itemInfo: ItemInfo): React.ReactNode;
@@ -101,6 +102,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
     overscanCount: 3,
     scrollDirection: DIRECTION.VERTICAL,
     width: '100%',
+    preCalculateTotalHeight: false,
   };
 
   static propTypes = {
@@ -132,6 +134,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
     stickyIndices: PropTypes.arrayOf(PropTypes.number),
     style: PropTypes.object,
     width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    preCalculateTotalHeight: PropTypes.bool,
   };
 
   itemSizeGetter = (itemSize: Props['itemSize']) => {
@@ -142,6 +145,9 @@ export default class VirtualList extends React.PureComponent<Props, State> {
     itemCount: this.props.itemCount,
     itemSizeGetter: this.itemSizeGetter(this.props.itemSize),
     estimatedItemSize: this.getEstimatedItemSize(),
+    preCalculateTotalHeight:
+      this.props.preCalculateTotalHeight ||
+      VirtualList.defaultProps.preCalculateTotalHeight,
   });
 
   readonly state: State = {
@@ -178,6 +184,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
       scrollOffset,
       scrollToAlignment,
       scrollToIndex,
+      preCalculateTotalHeight,
     } = this.props;
     const scrollPropsHaveChanged =
       nextProps.scrollToIndex !== scrollToIndex ||
@@ -185,7 +192,14 @@ export default class VirtualList extends React.PureComponent<Props, State> {
     const itemPropsHaveChanged =
       nextProps.itemCount !== itemCount ||
       nextProps.itemSize !== itemSize ||
-      nextProps.estimatedItemSize !== estimatedItemSize;
+      nextProps.estimatedItemSize !== estimatedItemSize ||
+      nextProps.preCalculateTotalHeight !== preCalculateTotalHeight;
+
+    if (nextProps.preCalculateTotalHeight !== preCalculateTotalHeight) {
+      this.sizeAndPositionManager.updateConfig({
+        preCalculateTotalHeight,
+      });
+    }
 
     if (nextProps.itemSize !== itemSize) {
       this.sizeAndPositionManager.updateConfig({
@@ -289,6 +303,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
       stickyIndices,
       style,
       width,
+      preCalculateTotalHeight,
       ...props
     } = this.props;
     const {offset} = this.state;

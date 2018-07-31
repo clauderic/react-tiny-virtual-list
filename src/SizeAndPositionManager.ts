@@ -17,6 +17,7 @@ export interface Options {
   itemCount: number;
   itemSizeGetter: ItemSizeGetter;
   estimatedItemSize: number;
+  preCalculateTotalHeight: boolean;
 }
 
 export default class SizeAndPositionManager {
@@ -24,12 +25,21 @@ export default class SizeAndPositionManager {
   private itemCount: number;
   private estimatedItemSize: number;
   private lastMeasuredIndex: number;
+  private preCalculateTotalHeight: boolean;
+  private totalSize?: number;
   private itemSizeAndPositionData: SizeAndPositionData;
 
-  constructor({itemCount, itemSizeGetter, estimatedItemSize}: Options) {
+  constructor({
+    itemCount,
+    itemSizeGetter,
+    estimatedItemSize,
+    preCalculateTotalHeight,
+  }: Options) {
     this.itemSizeGetter = itemSizeGetter;
     this.itemCount = itemCount;
     this.estimatedItemSize = estimatedItemSize;
+    this.preCalculateTotalHeight = preCalculateTotalHeight;
+    this.updateTotalSize();
 
     // Cache of size and position data for items, mapped by item index.
     this.itemSizeAndPositionData = {};
@@ -42,6 +52,7 @@ export default class SizeAndPositionManager {
     itemCount,
     itemSizeGetter,
     estimatedItemSize,
+    preCalculateTotalHeight,
   }: Partial<Options>) {
     if (itemCount != null) {
       this.itemCount = itemCount;
@@ -54,6 +65,26 @@ export default class SizeAndPositionManager {
     if (itemSizeGetter != null) {
       this.itemSizeGetter = itemSizeGetter;
     }
+
+    if (preCalculateTotalHeight != null) {
+      this.preCalculateTotalHeight = preCalculateTotalHeight;
+    }
+
+    this.updateTotalSize();
+  }
+
+  updateTotalSize() {
+    if (!this.preCalculateTotalHeight) {
+      this.totalSize = undefined;
+      return;
+    }
+
+    let totalSize = 0;
+    for (let i = 0; i < this.itemCount; i++) {
+      totalSize += this.itemSizeGetter(i);
+    }
+
+    this.totalSize = totalSize;
   }
 
   getLastMeasuredIndex() {
@@ -109,6 +140,8 @@ export default class SizeAndPositionManager {
    * As items as measured the estimate will be updated.
    */
   getTotalSize(): number {
+    if (this.totalSize) return this.totalSize;
+
     const lastMeasuredSizeAndPosition = this.getSizeAndPositionOfLastMeasuredItem();
 
     return (

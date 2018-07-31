@@ -3,6 +3,8 @@ import {ALIGNMENT} from '../src/constants';
 
 const ITEM_SIZE = 10;
 
+const range = N => Array.from({length: N}, (_, k) => k + 1);
+
 describe('SizeAndPositionManager', () => {
   function getItemSizeAndPositionManager({
     itemCount = 100,
@@ -21,6 +23,34 @@ describe('SizeAndPositionManager', () => {
     return {
       sizeAndPositionManager,
       itemSizeGetterCalls,
+    };
+  }
+
+  function getItemSizeAndPositionManagerWithPreCalculatedHeight({
+    itemCount = 100,
+    estimatedItemSize = 15,
+  } = {}) {
+    const dynamicHeights = range(itemCount).map(() => {
+      return Math.max(Math.ceil(Math.random() * 1000), 50);
+    });
+
+    const itemSizeGetterCalls: number[] = [];
+    const sizeAndPositionManager = new SizeAndPositionManager({
+      itemCount,
+      itemSizeGetter: (index: number) => {
+        itemSizeGetterCalls.push(index);
+        return dynamicHeights[index];
+      },
+      estimatedItemSize,
+      preCalculateTotalHeight: true,
+    });
+
+    return {
+      sizeAndPositionManager,
+      itemSizeGetterCalls,
+      totalSize: dynamicHeights.reduce((acc, currentValue) => {
+        return acc + currentValue;
+      }, 0),
     };
   }
 
@@ -166,6 +196,16 @@ describe('SizeAndPositionManager', () => {
       const {sizeAndPositionManager} = getItemSizeAndPositionManager();
       sizeAndPositionManager.getSizeAndPositionForIndex(99);
       expect(sizeAndPositionManager.getTotalSize()).toEqual(1000);
+    });
+  });
+
+  describe('getTotalSize when preCalculateTotalHeight is true', () => {
+    it('should calculate total size based on pre calculating the height', () => {
+      const {
+        sizeAndPositionManager,
+        totalSize,
+      } = getItemSizeAndPositionManagerWithPreCalculatedHeight();
+      expect(sizeAndPositionManager.getTotalSize()).toEqual(totalSize);
     });
   });
 
