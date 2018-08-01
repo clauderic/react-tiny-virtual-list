@@ -171,9 +171,7 @@ export default class SizeAndPositionManager {
    * Total size of all items being measured.
    */
   getTotalSize(): number {
-    /**
-     * Return the pre computed totalSize when itemSize is number or array.
-     */
+    // Return the pre computed totalSize when itemSize is number or array.
     if (this.totalSize) return this.totalSize;
 
     /**
