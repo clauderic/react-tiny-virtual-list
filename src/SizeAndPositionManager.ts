@@ -14,46 +14,35 @@ interface SizeAndPositionData {
 }
 
 export interface Options {
+  itemSize: ItemSize;
   itemCount: number;
-  itemSizeGetter: ItemSizeGetter;
   estimatedItemSize: number;
-  preCalculateTotalHeight: boolean;
 }
 
 export default class SizeAndPositionManager {
-  private itemSizeGetter: ItemSizeGetter;
   private itemCount: number;
-  private estimatedItemSize: number;
+  private itemSize: ItemSize;
   private lastMeasuredIndex: number;
-  private preCalculateTotalHeight: boolean;
+  private justInTime: boolean;
+  private estimatedItemSize: number;
   private totalSize?: number;
   private itemSizeAndPositionData: SizeAndPositionData;
 
-  constructor({
-    itemCount,
-    itemSizeGetter,
-    estimatedItemSize,
-    preCalculateTotalHeight,
-  }: Options) {
-    this.itemSizeGetter = itemSizeGetter;
+  constructor({itemSize, itemCount, estimatedItemSize}: Options) {
+    this.itemSize = itemSize;
     this.itemCount = itemCount;
     this.estimatedItemSize = estimatedItemSize;
-    this.preCalculateTotalHeight = preCalculateTotalHeight;
-    this.updateTotalSize();
 
     // Cache of size and position data for items, mapped by item index.
     this.itemSizeAndPositionData = {};
 
     // Measurements for items up to this index can be trusted; items afterward should be estimated.
     this.lastMeasuredIndex = -1;
+
+    this.processConfig();
   }
 
-  updateConfig({
-    itemCount,
-    itemSizeGetter,
-    estimatedItemSize,
-    preCalculateTotalHeight,
-  }: Partial<Options>) {
+  updateConfig({itemSize, itemCount, estimatedItemSize}: Partial<Options>) {
     if (itemCount != null) {
       this.itemCount = itemCount;
     }
@@ -62,26 +51,58 @@ export default class SizeAndPositionManager {
       this.estimatedItemSize = estimatedItemSize;
     }
 
-    if (itemSizeGetter != null) {
-      this.itemSizeGetter = itemSizeGetter;
+    if (itemSize != null) {
+      this.itemSize = itemSize;
     }
 
-    if (preCalculateTotalHeight != null) {
-      this.preCalculateTotalHeight = preCalculateTotalHeight;
-    }
-
-    this.updateTotalSize();
+    this.processConfig();
   }
 
-  updateTotalSize() {
-    if (!this.preCalculateTotalHeight) {
+  /**
+   * This is called when the SizeAndPositionManager is created and updated.
+   */
+  processConfig() {
+    const {itemSize} = this;
+
+    if (typeof itemSize === 'function') {
       this.totalSize = undefined;
-      return;
+      this.justInTime = true;
+    } else {
+      this.justInTime = false;
+      this.computeTotalSizeAndPositionData();
     }
+  }
+
+  /**
+   * Compute the totalSize and itemSizeAndPositionData at the start,
+   * when itemSize is a number or array.
+   */
+  computeTotalSizeAndPositionData() {
+    const {itemSize, itemCount} = this;
+    const itemSizeIsArray = Array.isArray(itemSize);
+    const itemSizeIsNumber = typeof itemSize === 'number';
 
     let totalSize = 0;
-    for (let i = 0; i < this.itemCount; i++) {
-      totalSize += this.itemSizeGetter(i);
+    for (let i = 0; i < itemCount; i++) {
+      let size;
+      if (itemSizeIsNumber) {
+        size = itemSize;
+      } else if (itemSizeIsArray) {
+        size = itemSize[i];
+
+        // Break when you are not supplying the same itemCount as available itemSizes.
+        if (typeof size === 'undefined') {
+          break;
+        }
+      }
+
+      const offset = totalSize;
+      totalSize += size;
+
+      this.itemSizeAndPositionData[i] = {
+        offset,
+        size,
+      };
     }
 
     this.totalSize = totalSize;
@@ -93,7 +114,6 @@ export default class SizeAndPositionManager {
 
   /**
    * This method returns the size and position for the item at the specified index.
-   * It just-in-time calculates (or used cached values) for items leading up to the index.
    */
   getSizeAndPositionForIndex(index: number) {
     if (index < 0 || index >= this.itemCount) {
@@ -102,13 +122,26 @@ export default class SizeAndPositionManager {
       );
     }
 
+    if (this.justInTime) {
+      return this.getJustInTimeSizeAndPositionForIndex(index);
+    }
+
+    return this.itemSizeAndPositionData[index];
+  }
+
+  /**
+   * This is used when itemSize is a function.
+   * just-in-time calculates (or used cached values) for items leading up to the index.
+   */
+  getJustInTimeSizeAndPositionForIndex(index: number) {
     if (index > this.lastMeasuredIndex) {
       const lastMeasuredSizeAndPosition = this.getSizeAndPositionOfLastMeasuredItem();
+      const itemSizeGetter = this.itemSize as ItemSizeGetter;
       let offset =
         lastMeasuredSizeAndPosition.offset + lastMeasuredSizeAndPosition.size;
 
       for (let i = this.lastMeasuredIndex + 1; i <= index; i++) {
-        const size = this.itemSizeGetter(i);
+        const size = itemSizeGetter(i);
 
         if (size == null || isNaN(size)) {
           throw Error(`Invalid size returned for index ${i} of value ${size}`);
@@ -136,12 +169,18 @@ export default class SizeAndPositionManager {
 
   /**
    * Total size of all items being measured.
-   * This value will be completedly estimated initially.
-   * As items as measured the estimate will be updated.
    */
   getTotalSize(): number {
+    /**
+     * Return the pre computed totalSize when itemSize is number or array.
+     */
     if (this.totalSize) return this.totalSize;
 
+    /**
+     * When itemSize is a function,
+     * This value will be completedly estimated initially.
+     * As items as measured the estimate will be updated.
+     */
     const lastMeasuredSizeAndPosition = this.getSizeAndPositionOfLastMeasuredItem();
 
     return (

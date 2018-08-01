@@ -57,7 +57,6 @@ export interface Props {
   stickyIndices?: number[];
   style?: React.CSSProperties;
   width?: number | string;
-  preCalculateTotalHeight?: boolean;
   onItemsRendered?({startIndex, stopIndex}: RenderedRows): void;
   onScroll?(offset: number, event: UIEvent): void;
   renderItem(itemInfo: ItemInfo): React.ReactNode;
@@ -102,7 +101,6 @@ export default class VirtualList extends React.PureComponent<Props, State> {
     overscanCount: 3,
     scrollDirection: DIRECTION.VERTICAL,
     width: '100%',
-    preCalculateTotalHeight: false,
   };
 
   static propTypes = {
@@ -134,20 +132,12 @@ export default class VirtualList extends React.PureComponent<Props, State> {
     stickyIndices: PropTypes.arrayOf(PropTypes.number),
     style: PropTypes.object,
     width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-    preCalculateTotalHeight: PropTypes.bool,
-  };
-
-  itemSizeGetter = (itemSize: Props['itemSize']) => {
-    return index => this.getSize(index, itemSize);
   };
 
   sizeAndPositionManager = new SizeAndPositionManager({
     itemCount: this.props.itemCount,
-    itemSizeGetter: this.itemSizeGetter(this.props.itemSize),
+    itemSize: this.props.itemSize,
     estimatedItemSize: this.getEstimatedItemSize(),
-    preCalculateTotalHeight:
-      this.props.preCalculateTotalHeight ||
-      VirtualList.defaultProps.preCalculateTotalHeight,
   });
 
   readonly state: State = {
@@ -184,7 +174,6 @@ export default class VirtualList extends React.PureComponent<Props, State> {
       scrollOffset,
       scrollToAlignment,
       scrollToIndex,
-      preCalculateTotalHeight,
     } = this.props;
     const scrollPropsHaveChanged =
       nextProps.scrollToIndex !== scrollToIndex ||
@@ -192,18 +181,11 @@ export default class VirtualList extends React.PureComponent<Props, State> {
     const itemPropsHaveChanged =
       nextProps.itemCount !== itemCount ||
       nextProps.itemSize !== itemSize ||
-      nextProps.estimatedItemSize !== estimatedItemSize ||
-      nextProps.preCalculateTotalHeight !== preCalculateTotalHeight;
-
-    if (nextProps.preCalculateTotalHeight !== preCalculateTotalHeight) {
-      this.sizeAndPositionManager.updateConfig({
-        preCalculateTotalHeight,
-      });
-    }
+      nextProps.estimatedItemSize !== estimatedItemSize;
 
     if (nextProps.itemSize !== itemSize) {
       this.sizeAndPositionManager.updateConfig({
-        itemSizeGetter: this.itemSizeGetter(nextProps.itemSize),
+        itemSize: nextProps.itemSize,
       });
     }
 
@@ -213,7 +195,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
     ) {
       this.sizeAndPositionManager.updateConfig({
         itemCount: nextProps.itemCount,
-        estimatedItemSize: this.getEstimatedItemSize(nextProps),
+        // estimatedItemSize: this.getEstimatedItemSize(nextProps),
       });
     }
 
@@ -303,7 +285,6 @@ export default class VirtualList extends React.PureComponent<Props, State> {
       stickyIndices,
       style,
       width,
-      preCalculateTotalHeight,
       ...props
     } = this.props;
     const {offset} = this.state;
@@ -401,14 +382,6 @@ export default class VirtualList extends React.PureComponent<Props, State> {
       (typeof props.itemSize === 'number' && props.itemSize) ||
       50
     );
-  }
-
-  private getSize(index: number, itemSize) {
-    if (typeof itemSize === 'function') {
-      return itemSize(index);
-    }
-
-    return Array.isArray(itemSize) ? itemSize[index] : itemSize;
   }
 
   private getStyle(index: number, sticky: boolean) {
