@@ -116,6 +116,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
     onScroll: PropTypes.func,
     onItemsRendered: PropTypes.func,
     overscanCount: PropTypes.number,
+    ref: PropTypes.func,
     renderItem: PropTypes.func.isRequired,
     scrollOffset: PropTypes.number,
     scrollToIndex: PropTypes.number,
@@ -350,6 +351,9 @@ export default class VirtualList extends React.PureComponent<Props, State> {
 
   private getRef = (node: HTMLDivElement): void => {
     this.rootNode = node;
+    if (this.props.ref) {
+      this.props.ref(node);
+    }
   };
 
   private handleScroll = (event: UIEvent) => {
