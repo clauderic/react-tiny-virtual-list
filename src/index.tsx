@@ -195,7 +195,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
     ) {
       this.sizeAndPositionManager.updateConfig({
         itemCount: nextProps.itemCount,
-        // estimatedItemSize: this.getEstimatedItemSize(nextProps),
+        estimatedItemSize: this.getEstimatedItemSize(nextProps),
       });
     }
 
