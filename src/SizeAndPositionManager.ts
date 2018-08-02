@@ -23,7 +23,6 @@ export default class SizeAndPositionManager {
   private itemCount: number;
   private itemSize: ItemSize;
   private lastMeasuredIndex: number;
-  private justInTime: boolean;
   private estimatedItemSize: number;
   private totalSize?: number;
   private itemSizeAndPositionData: SizeAndPositionData;
@@ -39,7 +38,11 @@ export default class SizeAndPositionManager {
     // Measurements for items up to this index can be trusted; items afterward should be estimated.
     this.lastMeasuredIndex = -1;
 
-    this.processConfig();
+    this.checkForItemSizeOverflow();
+
+    if (!this.justInTime()) {
+      this.computeTotalSizeAndPositionData();
+    }
   }
 
   updateConfig({itemSize, itemCount, estimatedItemSize}: Partial<Options>) {
@@ -55,47 +58,45 @@ export default class SizeAndPositionManager {
       this.itemSize = itemSize;
     }
 
-    this.processConfig();
-  }
+    this.checkForItemSizeOverflow();
 
-  /**
-   * This is called when the SizeAndPositionManager is created and updated.
-   */
-  processConfig() {
-    const {itemSize} = this;
-
-    if (typeof itemSize === 'function') {
+    if (this.justInTime() && this.totalSize != null) {
       this.totalSize = undefined;
-      this.justInTime = true;
     } else {
-      this.justInTime = false;
       this.computeTotalSizeAndPositionData();
     }
   }
 
+  checkForItemSizeOverflow() {
+    if (Array.isArray(this.itemSize) && this.itemSize.length < this.itemCount) {
+      throw Error(
+        `When itemSize is an array, itemSize.length can't be smaller than itemCount`,
+      );
+    }
+  }
+
+  getSize(index: number) {
+    const {itemSize} = this;
+
+    if (typeof itemSize === 'function') {
+      return itemSize(index);
+    }
+
+    return Array.isArray(itemSize) ? itemSize[index] : itemSize;
+  }
+
+  justInTime() {
+    return typeof this.itemSize === 'function';
+  }
+
   /**
    * Compute the totalSize and itemSizeAndPositionData at the start,
-   * when itemSize is a number or array.
+   * only when itemSize is a number or an array.
    */
   computeTotalSizeAndPositionData() {
-    const {itemSize, itemCount} = this;
-    const itemSizeIsArray = Array.isArray(itemSize);
-    const itemSizeIsNumber = typeof itemSize === 'number';
-
     let totalSize = 0;
-    for (let i = 0; i < itemCount; i++) {
-      let size;
-      if (itemSizeIsNumber) {
-        size = itemSize;
-      } else if (itemSizeIsArray) {
-        size = itemSize[i];
-
-        // Break when you are not supplying the same itemCount as available itemSizes.
-        if (typeof size === 'undefined') {
-          break;
-        }
-      }
-
+    for (let i = 0; i < this.itemCount; i++) {
+      const size = this.getSize(i);
       const offset = totalSize;
       totalSize += size;
 
@@ -122,7 +123,7 @@ export default class SizeAndPositionManager {
       );
     }
 
-    if (this.justInTime) {
+    if (this.justInTime()) {
       return this.getJustInTimeSizeAndPositionForIndex(index);
     }
 
@@ -136,12 +137,11 @@ export default class SizeAndPositionManager {
   getJustInTimeSizeAndPositionForIndex(index: number) {
     if (index > this.lastMeasuredIndex) {
       const lastMeasuredSizeAndPosition = this.getSizeAndPositionOfLastMeasuredItem();
-      const itemSizeGetter = this.itemSize as ItemSizeGetter;
       let offset =
         lastMeasuredSizeAndPosition.offset + lastMeasuredSizeAndPosition.size;
 
       for (let i = this.lastMeasuredIndex + 1; i <= index; i++) {
-        const size = itemSizeGetter(i);
+        const size = this.getSize(i);
 
         if (size == null || isNaN(size)) {
           throw Error(`Invalid size returned for index ${i} of value ${size}`);
