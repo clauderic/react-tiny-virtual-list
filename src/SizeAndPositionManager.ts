@@ -38,11 +38,15 @@ export default class SizeAndPositionManager {
     // Measurements for items up to this index can be trusted; items afterward should be estimated.
     this.lastMeasuredIndex = -1;
 
-    this.checkForItemSizeOverflow();
+    this.checkForMismatchItemSizeAndItemCount();
 
-    if (!this.justInTime()) {
+    if (!this.justInTime) {
       this.computeTotalSizeAndPositionData();
     }
+  }
+
+  get justInTime() {
+    return typeof this.itemSize === 'function';
   }
 
   updateConfig({itemSize, itemCount, estimatedItemSize}: Partial<Options>) {
@@ -58,16 +62,16 @@ export default class SizeAndPositionManager {
       this.itemSize = itemSize;
     }
 
-    this.checkForItemSizeOverflow();
+    this.checkForMismatchItemSizeAndItemCount();
 
-    if (this.justInTime() && this.totalSize != null) {
+    if (this.justInTime && this.totalSize != null) {
       this.totalSize = undefined;
     } else {
       this.computeTotalSizeAndPositionData();
     }
   }
 
-  checkForItemSizeOverflow() {
+  checkForMismatchItemSizeAndItemCount() {
     if (Array.isArray(this.itemSize) && this.itemSize.length < this.itemCount) {
       throw Error(
         `When itemSize is an array, itemSize.length can't be smaller than itemCount`,
@@ -83,10 +87,6 @@ export default class SizeAndPositionManager {
     }
 
     return Array.isArray(itemSize) ? itemSize[index] : itemSize;
-  }
-
-  justInTime() {
-    return typeof this.itemSize === 'function';
   }
 
   /**
@@ -123,11 +123,9 @@ export default class SizeAndPositionManager {
       );
     }
 
-    if (this.justInTime()) {
-      return this.getJustInTimeSizeAndPositionForIndex(index);
-    }
-
-    return this.itemSizeAndPositionData[index];
+    return this.justInTime
+      ? this.getJustInTimeSizeAndPositionForIndex(index)
+      : this.itemSizeAndPositionData[index];
   }
 
   /**
