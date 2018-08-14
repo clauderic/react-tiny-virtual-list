@@ -134,13 +134,9 @@ export default class VirtualList extends React.PureComponent<Props, State> {
     width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   };
 
-  itemSizeGetter = (itemSize: Props['itemSize']) => {
-    return index => this.getSize(index, itemSize);
-  };
-
   sizeAndPositionManager = new SizeAndPositionManager({
     itemCount: this.props.itemCount,
-    itemSizeGetter: this.itemSizeGetter(this.props.itemSize),
+    itemSize: this.props.itemSize,
     estimatedItemSize: this.getEstimatedItemSize(),
   });
 
@@ -189,7 +185,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
 
     if (nextProps.itemSize !== itemSize) {
       this.sizeAndPositionManager.updateConfig({
-        itemSizeGetter: this.itemSizeGetter(nextProps.itemSize),
+        itemSize: nextProps.itemSize,
       });
     }
 
@@ -386,14 +382,6 @@ export default class VirtualList extends React.PureComponent<Props, State> {
       (typeof props.itemSize === 'number' && props.itemSize) ||
       50
     );
-  }
-
-  private getSize(index: number, itemSize) {
-    if (typeof itemSize === 'function') {
-      return itemSize(index);
-    }
-
-    return Array.isArray(itemSize) ? itemSize[index] : itemSize;
   }
 
   private getStyle(index: number, sticky: boolean) {

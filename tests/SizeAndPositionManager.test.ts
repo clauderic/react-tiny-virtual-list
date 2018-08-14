@@ -3,7 +3,10 @@ import {ALIGNMENT} from '../src/constants';
 
 const ITEM_SIZE = 10;
 
+const range = N => Array.from({length: N}, (_, k) => k + 1);
+
 describe('SizeAndPositionManager', () => {
+  // itemSize is a function.
   function getItemSizeAndPositionManager({
     itemCount = 100,
     estimatedItemSize = 15,
@@ -11,7 +14,7 @@ describe('SizeAndPositionManager', () => {
     const itemSizeGetterCalls: number[] = [];
     const sizeAndPositionManager = new SizeAndPositionManager({
       itemCount,
-      itemSizeGetter: (index: number) => {
+      itemSize: (index: number) => {
         itemSizeGetterCalls.push(index);
         return 10;
       },
@@ -21,6 +24,43 @@ describe('SizeAndPositionManager', () => {
     return {
       sizeAndPositionManager,
       itemSizeGetterCalls,
+    };
+  }
+
+  function getItemSizeAndPositionManagerNumber({
+    itemCount = 100,
+    itemSize = 50,
+  } = {}) {
+    const itemSizeGetterCalls: number[] = [];
+    const sizeAndPositionManager = new SizeAndPositionManager({
+      itemCount,
+      itemSize,
+    });
+
+    return {
+      sizeAndPositionManager,
+      itemSize,
+      totalSize: itemSize * itemCount,
+    };
+  }
+
+  function getItemSizeAndPositionManagerArray({itemCount = 100} = {}) {
+    const itemSize = range(itemCount).map(item => {
+      return Math.max(Math.round(Math.random() * 100), 32);
+    });
+
+    const itemSizeGetterCalls: number[] = [];
+    const sizeAndPositionManager = new SizeAndPositionManager({
+      itemCount,
+      itemSize,
+    });
+
+    return {
+      sizeAndPositionManager,
+      itemSize,
+      totalSize: itemSize.reduce((acc, curr) => {
+        return acc + curr;
+      }, 0),
     };
   }
 
@@ -59,7 +99,7 @@ describe('SizeAndPositionManager', () => {
     });
   });
 
-  describe('getSizeAndPositionForIndex', () => {
+  describe('getSizeAndPositionForIndex when itemSize is a function', () => {
     it('should error if an invalid index is specified', () => {
       const {sizeAndPositionManager} = getItemSizeAndPositionManager();
       expect(() =>
@@ -70,7 +110,7 @@ describe('SizeAndPositionManager', () => {
       ).toThrow();
     });
 
-    it('should returnt he correct size and position information for the requested item', () => {
+    it('should return the correct size and position information for the requested item', () => {
       const {sizeAndPositionManager} = getItemSizeAndPositionManager();
       expect(
         sizeAndPositionManager.getSizeAndPositionForIndex(0).offset,
@@ -127,6 +167,68 @@ describe('SizeAndPositionManager', () => {
     });
   });
 
+  describe('getSizeAndPositionForIndex when itemSize is a number', () => {
+    it('should error if an invalid index is specified', () => {
+      const {sizeAndPositionManager} = getItemSizeAndPositionManagerNumber();
+      expect(() =>
+        sizeAndPositionManager.getSizeAndPositionForIndex(-1),
+      ).toThrow();
+      expect(() =>
+        sizeAndPositionManager.getSizeAndPositionForIndex(100),
+      ).toThrow();
+    });
+
+    it('should return the correct size and position information for the requested item', () => {
+      const {
+        sizeAndPositionManager,
+        itemSize,
+      } = getItemSizeAndPositionManagerNumber();
+      expect(
+        sizeAndPositionManager.getSizeAndPositionForIndex(0).offset,
+      ).toEqual(0);
+      expect(sizeAndPositionManager.getSizeAndPositionForIndex(0).size).toEqual(
+        itemSize,
+      );
+      expect(
+        sizeAndPositionManager.getSizeAndPositionForIndex(1).offset,
+      ).toEqual(itemSize);
+      expect(
+        sizeAndPositionManager.getSizeAndPositionForIndex(2).offset,
+      ).toEqual(itemSize * 2);
+    });
+  });
+
+  describe('getSizeAndPositionForIndex when itemSize is an array', () => {
+    it('should error if an invalid index is specified', () => {
+      const {sizeAndPositionManager} = getItemSizeAndPositionManagerArray();
+      expect(() =>
+        sizeAndPositionManager.getSizeAndPositionForIndex(-1),
+      ).toThrow();
+      expect(() =>
+        sizeAndPositionManager.getSizeAndPositionForIndex(100),
+      ).toThrow();
+    });
+
+    it('should return the correct size and position information for the requested item', () => {
+      const {
+        sizeAndPositionManager,
+        itemSize,
+      } = getItemSizeAndPositionManagerArray();
+      expect(
+        sizeAndPositionManager.getSizeAndPositionForIndex(0).offset,
+      ).toEqual(0);
+      expect(sizeAndPositionManager.getSizeAndPositionForIndex(0).size).toEqual(
+        itemSize[0],
+      );
+      expect(
+        sizeAndPositionManager.getSizeAndPositionForIndex(1).offset,
+      ).toEqual(itemSize[0]);
+      expect(
+        sizeAndPositionManager.getSizeAndPositionForIndex(2).offset,
+      ).toEqual(itemSize[0] + itemSize[1]);
+    });
+  });
+
   describe('getSizeAndPositionOfLastMeasuredItem', () => {
     it('should return an empty object if no cached items are present', () => {
       const {sizeAndPositionManager} = getItemSizeAndPositionManager();
@@ -150,7 +252,7 @@ describe('SizeAndPositionManager', () => {
     });
   });
 
-  describe('getTotalSize', () => {
+  describe('getTotalSize when itemSize is a function', () => {
     it('should calculate total size based purely on :estimatedItemSize if no measurements have been done', () => {
       const {sizeAndPositionManager} = getItemSizeAndPositionManager();
       expect(sizeAndPositionManager.getTotalSize()).toEqual(1500);
@@ -166,6 +268,26 @@ describe('SizeAndPositionManager', () => {
       const {sizeAndPositionManager} = getItemSizeAndPositionManager();
       sizeAndPositionManager.getSizeAndPositionForIndex(99);
       expect(sizeAndPositionManager.getTotalSize()).toEqual(1000);
+    });
+  });
+
+  describe('getTotalSize when itemSize is a number', () => {
+    it('should calculate total size by multiplying the itemCount with the itemSize', () => {
+      const {
+        sizeAndPositionManager,
+        totalSize,
+      } = getItemSizeAndPositionManagerNumber();
+      expect(sizeAndPositionManager.getTotalSize()).toEqual(totalSize);
+    });
+  });
+
+  describe('getTotalSize when itemSize is an array', () => {
+    it('should calculate total size by counting together all of the itemSize items', () => {
+      const {
+        sizeAndPositionManager,
+        totalSize,
+      } = getItemSizeAndPositionManagerArray();
+      expect(sizeAndPositionManager.getTotalSize()).toEqual(totalSize);
     });
   });
 
@@ -189,7 +311,7 @@ describe('SizeAndPositionManager', () => {
     }) {
       const sizeAndPositionManager = new SizeAndPositionManager({
         itemCount,
-        itemSizeGetter: () => itemSize,
+        itemSize: () => itemSize,
         estimatedItemSize,
       });
 
