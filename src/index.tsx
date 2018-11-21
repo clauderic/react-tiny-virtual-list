@@ -12,7 +12,10 @@ import {
   sizeProp,
 } from './constants';
 
-export {DIRECTION as ScrollDirection} from './constants';
+export {
+  DIRECTION as ScrollDirection,
+  ALIGNMENT as scrollAlignment,
+} from './constants';
 
 export type ItemPosition = 'absolute' | 'sticky';
 
