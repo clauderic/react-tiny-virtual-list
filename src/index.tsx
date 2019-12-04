@@ -170,6 +170,7 @@ export default class VirtualList extends React.PureComponent<Props, State> {
     }
   }
 
+  // eslint-disable-next-line camelcase
   UNSAFE_componentWillReceiveProps(nextProps: Props) {
     const {
       estimatedItemSize,
