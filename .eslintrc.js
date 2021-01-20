@@ -34,7 +34,9 @@ module.exports = {
     "no-use-before-define": "off",
     "@typescript-eslint/no-use-before-define": ["error"],
     "@shopify/react-prefer-private-members": "off",
-    "@typescript-eslint/member-ordering": "off"
+    "@shopify/typescript/prefer-pascal-case-enums": "off",
+    "@typescript-eslint/member-ordering": "off",
+    "@typescript-eslint/naming-convention": "off"
   },
   settings: {
     "import/ignore": ["node_modules", "\\.s?css"],

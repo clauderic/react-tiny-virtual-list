@@ -159,32 +159,6 @@ export default class VirtualList extends React.PureComponent<Props, State> {
 
   private styleCache: StyleCache = {};
 
-  private getRef = (node: HTMLDivElement): void => {
-    this.rootNode = node;
-  };
-
-  private handleScroll = (event: UIEvent) => {
-    const { onScroll } = this.props;
-    const offset = this.getNodeOffset();
-
-    if (
-      offset < 0 ||
-      this.state.offset === offset ||
-      event.target !== this.rootNode
-    ) {
-      return;
-    }
-
-    this.setState({
-      offset,
-      scrollChangeReason: SCROLL_CHANGE_REASON.OBSERVED,
-    });
-
-    if (typeof onScroll === 'function') {
-      onScroll(offset, event);
-    }
-  };
-
   componentDidMount() {
     const { scrollOffset, scrollToIndex } = this.props;
     this.rootNode.addEventListener('scroll', this.handleScroll, {
@@ -383,6 +357,32 @@ export default class VirtualList extends React.PureComponent<Props, State> {
       </div>
     );
   }
+
+  private getRef = (node: HTMLDivElement): void => {
+    this.rootNode = node;
+  };
+
+  private handleScroll = (event: UIEvent) => {
+    const { onScroll } = this.props;
+    const offset = this.getNodeOffset();
+
+    if (
+      offset < 0 ||
+      this.state.offset === offset ||
+      event.target !== this.rootNode
+    ) {
+      return;
+    }
+
+    this.setState({
+      offset,
+      scrollChangeReason: SCROLL_CHANGE_REASON.OBSERVED,
+    });
+
+    if (typeof onScroll === 'function') {
+      onScroll(offset, event);
+    }
+  };
 
   private getNodeOffset() {
     const { scrollDirection = DIRECTION.VERTICAL } = this.props;
