@@ -284,6 +284,8 @@ export default class VirtualList extends React.PureComponent<Props, State> {
       renderItem,
       overscanCount,
       scrollDirection,
+      stickyIndices,
+      scrollToIndex,
       ...restProps
     } = this.props;
 
