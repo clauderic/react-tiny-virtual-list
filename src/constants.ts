@@ -1,16 +1,16 @@
-export enum ALIGNMENT {
+export const enum ALIGNMENT {
   AUTO = 'auto',
   START = 'start',
   CENTER = 'center',
   END = 'end',
 }
 
-export enum DIRECTION {
+export const enum DIRECTION {
   HORIZONTAL = 'horizontal',
   VERTICAL = 'vertical',
 }
 
-export enum SCROLL_CHANGE_REASON {
+export const enum SCROLL_CHANGE_REASON {
   OBSERVED = 'observed',
   REQUESTED = 'requested',
 }

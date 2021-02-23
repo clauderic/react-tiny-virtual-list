@@ -1,5 +1,5 @@
 /* Forked from react-virtualized 💖 */
-import {ALIGNMENT} from './constants';
+import { ALIGNMENT } from './constants';
 
 export type ItemSizeGetter = (index: number) => number;
 export type ItemSize = number | number[] | ItemSizeGetter;
@@ -26,7 +26,7 @@ export default class SizeAndPositionManager {
   private lastMeasuredIndex: number;
   private itemSizeAndPositionData: SizeAndPositionData;
 
-  constructor({itemCount, itemSizeGetter, estimatedItemSize}: Options) {
+  constructor({ itemCount, itemSizeGetter, estimatedItemSize }: Options) {
     this.itemSizeGetter = itemSizeGetter;
     this.itemCount = itemCount;
     this.estimatedItemSize = estimatedItemSize;
@@ -67,7 +67,7 @@ export default class SizeAndPositionManager {
   getSizeAndPositionForIndex(index: number) {
     if (index < 0 || index >= this.itemCount) {
       throw Error(
-        `Requested index ${index} is outside of range 0..${this.itemCount}`,
+        `Requested index ${index} is outside of range 0..${this.itemCount}`
       );
     }
 
@@ -100,7 +100,7 @@ export default class SizeAndPositionManager {
   getSizeAndPositionOfLastMeasuredItem() {
     return this.lastMeasuredIndex >= 0
       ? this.itemSizeAndPositionData[this.lastMeasuredIndex]
-      : {offset: 0, size: 0};
+      : { offset: 0, size: 0 };
   }
 
   /**
@@ -173,7 +173,7 @@ export default class SizeAndPositionManager {
     containerSize: number;
     offset: number;
     overscanCount: number;
-  }): {start?: number; stop?: number} {
+  }): { start?: number; stop?: number } {
     const totalSize = this.getTotalSize();
 
     if (totalSize === 0) {
@@ -285,7 +285,13 @@ export default class SizeAndPositionManager {
     return 0;
   }
 
-  private exponentialSearch({index, offset}: {index: number; offset: number}) {
+  private exponentialSearch({
+    index,
+    offset,
+  }: {
+    index: number;
+    offset: number;
+  }) {
     let interval = 1;
 
     while (
