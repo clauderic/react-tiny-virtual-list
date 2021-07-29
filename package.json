@@ -23,7 +23,7 @@
     "prop-types": "^15.5.7"
   },
   "peerDependencies": {
-    "react": "15.x || 16.x || 17.x"
+    "react": ">=16.3"
   },
   "devDependencies": {
     "@shopify/eslint-plugin": "^39.0.4",
@@ -49,9 +49,7 @@
     "nwb": "0.15.x",
     "prettier": "^2.2.1",
     "react": "^17.0.1",
-    "react-addons-test-utils": "^15.6.2",
     "react-dom": "^17.0.1",
-    "react-test-renderer": "^17.0.1",
     "rimraf": "^2.6.1",
     "rollup": "0.50.1",
     "rollup-plugin-babel": "^3.0.2",
