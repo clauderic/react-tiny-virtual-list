@@ -46,9 +46,16 @@ function runRollup({entry, output, format, minify = false, outputDir = build}) {
 }
 
 function compileTypescript(args = '') {
-  execSync(`./node_modules/.bin/tsc --outDir ${intermediateBuild} --rootDir ./src --baseurl ./src ${args}`, {
-    stdio: 'inherit',
-  });
+    const tscPath = resolvePath(root, './node_modules/.bin/tsc');
+    const tscConfigPath = resolvePath(root, './tsconfig.json');
+    const rootDir = resolvePath(root, './src');
+
+    execSync(
+        `${tscPath} --outDir ${intermediateBuild} --project ${tscConfigPath} --rootDir ${rootDir} --baseurl ${rootDir} ${args}`,
+        {
+            stdio: 'inherit',
+        },
+    );
 }
 
 function cleanIntermediateBuild(callback = () => {}) {
