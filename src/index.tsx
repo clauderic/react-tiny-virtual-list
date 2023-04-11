@@ -364,6 +364,13 @@ export default class VirtualList extends React.PureComponent<Props, State> {
       return;
     }
 
+    const target = event.target as HTMLDivElement;
+    const scrollHeight = target.scrollHeight;
+    const clientHeight = target.clientHeight;
+    if (offset > scrollHeight - clientHeight) {
+      return;
+    }
+
     this.setState({
       offset,
       scrollChangeReason: SCROLL_CHANGE_REASON.OBSERVED,
